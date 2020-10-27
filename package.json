@@ -5,7 +5,7 @@
   "author": "Commit the Change",
   "license": "ISC",
   "scripts": {
-    "start": "node server.js",
+    "start": "node app.js",
     "eslint-fix": "eslint . --ext .js,.jsx --fix",
     "postinstall": "npx husky install"
   },

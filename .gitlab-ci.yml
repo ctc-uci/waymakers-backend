@@ -1,0 +1,19 @@
+image: node
+ 
+stages:
+ - lint
+
+eslint:
+ stage: lint
+
+ only:
+   - master
+ 
+ script:
+   - npm install eslint-config-airbnb@18.2.0 
+   - npm install -g eslint@7.2.0 
+   - npm install eslint-plugin-import@^2.21.2 
+   - npm install eslint-plugin-jsx-a11y@^6.3.0 
+   - npm install eslint-plugin-react@^7.20.0 
+   - npm install eslint-plugin-react-hooks@4.0.0 --force
+   - eslint --ext js,jsx .

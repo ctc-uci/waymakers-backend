@@ -7,6 +7,10 @@ app.get('/', (req, res) => {
   res.send('Hello World!');
 });
 
+app.get('/another', (req, res) => {
+  res.send('This is another route!');
+});
+
 app.listen(port, () => {
   console.log(`App listening at http://localhost:${port}`);
 });

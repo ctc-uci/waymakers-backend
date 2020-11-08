@@ -81,6 +81,6 @@ app.delete("/inventories/:id", async (req,res)=>{
 
 
   
-app.listen(3000, () => {
+app.listen(port, () => {
     console.log(`Listening at http://localhost:${port}`);
 });

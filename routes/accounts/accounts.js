@@ -2,15 +2,15 @@
 const express = require('express');
 
 const accountRouter = express();
-const pool = require('./db');
+const pool = require('../../postgres/config');
 
 accountRouter.use(express.json());
 
 // Get all accounts
 accountRouter.get('/', async (req, res) => {
   try {
-    const allTodos = await pool.query('SELECT * FROM accounts');
-    res.send(allTodos.rows);
+    const allAccounts = await pool.query('SELECT * FROM accounts');
+    res.send(allAccounts.rows);
   } catch (err) {
     console.error(err.message);
   }

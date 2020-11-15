@@ -1,15 +1,13 @@
 const express = require('express');
+const accountsRoutes = require('./routes/accounts/accounts');
+const inventoryRoutes = require('./routes/inventory/inventory');
 
 const app = express();
 const port = 3000;
 
-app.get('/', (req, res) => {
-  res.send('Hello World!');
-});
+app.use('/accounts', accountsRoutes);
 
-app.get('/another', (req, res) => {
-  res.send('This is another route!');
-});
+app.use('/inventory', inventoryRoutes);
 
 app.listen(port, () => {
   console.log(`App listening at http://localhost:${port}`);

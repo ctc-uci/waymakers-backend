@@ -2,7 +2,7 @@
 const express = require('express');
 
 const accountRouter = express();
-const pool = require('./accountDB');
+const pool = require('../../postgres/config');
 
 accountRouter.use(express.json());
 

@@ -3,7 +3,7 @@
 const express = require('express');
 
 const inventoryRouter = express();
-const pool = require('./inventoryDB');
+const pool = require('../../postgres/config');
 
 inventoryRouter.use(express.json());
 

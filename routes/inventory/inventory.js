@@ -32,9 +32,9 @@ inventoryRouter.get('/:id', async (req, res) => {
 inventoryRouter.post('/', async (req, res) => {
   try {
     const {
-      name, inStock, numberNeeded, category,
+      name, quantity, needed, category,
     } = req.body;
-    const newItem = await pool.query(`INSERT INTO items (name, inStock, numberNeeded, category) VALUES ('${name}', '${inStock}', '${numberNeeded}' , '${category}') RETURNING *`);
+    const newItem = await pool.query(`INSERT INTO items (name, quantity, needed, category) VALUES ('${name}', '${quantity}', '${needed}' , '${category}') RETURNING *`);
     res.send(newItem.rows);
   } catch (err) {
     console.error(err.message);
@@ -46,11 +46,11 @@ inventoryRouter.put('/:id', async (req, res) => {
   try {
     const { id } = req.params;
     const {
-      name, inStock, numberNeeded, category,
+      name, quantity, needed, category,
     } = req.body;
     if (name) await pool.query(`UPDATE items SET name = '${name}' WHERE id = ${id}`);
-    if (inStock) await pool.query(`UPDATE items SET inStock = '${inStock}' WHERE id = ${id}`);
-    if (numberNeeded) await pool.query(`UPDATE items SET numberNeeded = '${numberNeeded}' WHERE id = ${id}`);
+    if (quantity) await pool.query(`UPDATE items SET quantity = '${quantity}' WHERE id = ${id}`);
+    if (needed) await pool.query(`UPDATE items SET needed = '${needed}' WHERE id = ${id}`);
     if (category) await pool.query(`UPDATE items SET category = '${category}' WHERE id = ${id}`);
     res.send(`Item with id ${id} was updated!`);
   } catch (err) {

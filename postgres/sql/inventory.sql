@@ -1,4 +1,4 @@
-CREATE DATABASE inventory_database;
+CREATE DATABASE inventory;
 
 CREATE TABLE items(
     id SERIAL PRIMARY KEY,

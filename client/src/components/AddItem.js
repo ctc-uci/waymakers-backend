@@ -11,11 +11,11 @@ const AddItem = () => {
     //category of item
     const [category, setCategory] = useState("");
     
-    const onSubmitForm = async e => {
-        e.preventDefault();
+    const onSubmitForm = async (e) => {
+        //e.preventDefault();
         try{
             const body={name, quantity, needed, category};
-            const response = fetch("http://localhost:3000/inventory",{
+            const response = await fetch("http://localhost:3000/inventory",{
                 method: "POST",
                 headers: {"Content-Type": "application/json"},
                 body: JSON.stringify(body)

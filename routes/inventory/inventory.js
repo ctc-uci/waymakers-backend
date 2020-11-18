@@ -9,7 +9,6 @@ inventoryRouter.use(express.json());
 
 // Get all item
 inventoryRouter.get('/', async (req, res) => {
-  res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3001');
   try {
     const allItems = await pool.query('SELECT * FROM items');
     res.send(allItems.rows);

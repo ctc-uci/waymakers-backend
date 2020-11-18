@@ -1,4 +1,3 @@
-import e from 'express';
 import React, {Fragment, useState} from 'react';
 
 const AddItem = () => {
@@ -15,7 +14,13 @@ const AddItem = () => {
     const onSubmitForm = async e => {
         e.preventDefault();
         try{
-            const body={name, quantity, needed};
+            const body={name, quantity, needed, category};
+            const response = fetch("http://localhost:3000/inventory",{
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify(body)
+            });
+            console.log(response);
         }catch(err){
             console.error(err.message);
         }
@@ -24,7 +29,7 @@ const AddItem = () => {
     return (
         <Fragment>
             <h1 className="text-center mt-5">Warehouse #1</h1>
-            <form className="d-flex flex-column">
+            <form className="d-flex flex-column" onSubmit={onSubmitForm}>
                 <input type="text" className="form-control" value={name} onChange={e => setName(e.target.value)}/>
                 <input type="number" className="form-control" value={quantity} onChange={e => setQuantity(e.target.value)}/>
                 <input type="number" className="form-control" value={needed} onChange={e => setNeeded(e.target.value)}/>

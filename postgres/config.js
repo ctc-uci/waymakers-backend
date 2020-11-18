@@ -2,6 +2,14 @@ const { Pool } = require('pg');
 require('dotenv').config();
 
 const pool = new Pool({
+  user: 'postgres',
+  password: 'ctc123',
+  host: 'localhost',
+  port: 5432,
+  database: 'inventory_database',
+});
+/**
+const pool = new Pool({
   user: process.env.AWS_USER,
   host: process.env.AWS_HOST,
   database: process.env.AWS_DATABASE,
@@ -9,6 +17,7 @@ const pool = new Pool({
   port: process.env.AWS_PORT,
 });
 
+*/
 module.exports = pool;
 
 // Example testing to connect to AWS

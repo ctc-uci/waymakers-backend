@@ -1,18 +1,19 @@
-import React, {Fragment} from "react";
-
+import React, {Fragment, Component} from "react";
 import './App.css';
 
 //components
-import Inventory from "./components/inventory/inventory";
+import DisplayItem from './components/DisplayItem';
 
-function App() {
-  return (
-    <Fragment>
-      <div className="container">
-        <Inventory />
-      </div>
-    </Fragment>
-  );
+class App extends Component {
+  render() {
+    return (
+      <Fragment>
+        <div className="container">
+          <DisplayItem />
+        </div>
+      </Fragment>
+    );
+  }  
 }
 
 export default App;

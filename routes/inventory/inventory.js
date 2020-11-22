@@ -1,5 +1,4 @@
 // Routes relating to inventory here
-// Routes relating to inventory here
 const express = require('express');
 
 const inventoryRouter = express();
@@ -18,10 +17,10 @@ inventoryRouter.get('/', async (req, res) => {
 });
 
 // Get an item
-inventoryRouter.get('/:id', async (req, res) => {
-  const { id } = req.params;
+inventoryRouter.get('/:category', async (req, res) => {
+  const { category } = req.params;
   try {
-    const item = await pool.query(`SELECT * FROM items WHERE id = ${id}`);
+    const item = await pool.query(`SELECT * FROM items WHERE category = '${category}'`);
     res.send(item.rows);
   } catch (err) {
     console.error(err.message);

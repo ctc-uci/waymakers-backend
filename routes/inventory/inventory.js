@@ -1,5 +1,4 @@
 // Routes relating to inventory here
-// Routes relating to inventory here
 const express = require('express');
 
 const inventoryRouter = express();

@@ -2,14 +2,14 @@ import React, {Fragment, Component} from "react";
 import './App.css';
 
 //components
-import DisplayItem from './components/DisplayItem';
+import Inventory from './components/inventory/inventory';
 
 class App extends Component {
   render() {
     return (
       <Fragment>
         <div className="container">
-          <DisplayItem />
+          <Inventory/>
         </div>
       </Fragment>
     );

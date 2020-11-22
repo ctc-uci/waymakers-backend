@@ -1,5 +1,9 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+
+// Adding CORS so node server can be run on localhost
+const cors = require('cors');
+
 // const db = require("./postgres/config.js");
 
 // routes
@@ -9,6 +13,10 @@ const categoryRouter = require('./routes/inventory/category');
 
 const app = express();
 const port = 3000;
+
+// Enabling CORS - Only for development
+app.use(cors());
+app.options('*', cors());
 
 app.use(bodyParser.json());
 app.use(

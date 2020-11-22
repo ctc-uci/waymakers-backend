@@ -28,7 +28,6 @@ const AddItem = () => {
 
     return (
         <Fragment>
-            <h1 className="text-center mt-5">Warehouse #1</h1>
             <form className="d-flex flex-column" onSubmit={onSubmitForm}>
                 <input type="text" className="form-control" value={name} onChange={e => setName(e.target.value)}/>
                 <input type="number" className="form-control" value={quantity} onChange={e => setQuantity(e.target.value)}/>

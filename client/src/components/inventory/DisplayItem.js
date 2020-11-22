@@ -31,13 +31,6 @@ const Displayitems = () => {
                 </tr>
             </thead>
             <tbody>
-                {/** 
-                <tr>
-                    <td>John</td>
-                    <td>Doe</td>
-                    <td>john@example.com</td>
-                </tr>
-                */}
                 {items.map(item => (
                     <tr>
                         <td>{item.name}</td>

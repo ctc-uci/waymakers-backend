@@ -3,15 +3,13 @@ import React, {Fragment} from "react";
 import './App.css';
 
 //components
-import AddItem from './components/AddItem';
-import DisplayItem from './components/DisplayItem';
+import Inventory from "./components/inventory/inventory";
 
 function App() {
   return (
     <Fragment>
       <div className="container">
-        <AddItem />
-        <DisplayItem />
+        <Inventory />
       </div>
     </Fragment>
   );

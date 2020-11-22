@@ -33,7 +33,7 @@ const EditableItem = (props) => {
       needed: needed,
       category: category,
     };
-    console.log('Updates: ', itemState.edits);
+    console.log("Updates: ", itemState.edits);
   };
 
   // Row to display when not in Edit mode

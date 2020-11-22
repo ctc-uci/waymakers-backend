@@ -28,24 +28,20 @@ const Table = (props) => {
         console.log(err.message);
       }
     }
-    
+
     // Deleting items
-    edits["deleted"].forEach( async (id) => {
-        try {
-            const response = await fetch(`http://localhost:3000/inventory/${id}`, {
-              method: "DELETE",
-              headers: { "Content-Type": "application/json" }
-            });
-          } catch (err) {
-            console.log(err.message);
-          }
-    })
+    edits["deleted"].forEach(async (id) => {
+      try {
+        const response = await fetch(`http://localhost:3000/inventory/${id}`, {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+        });
+      } catch (err) {
+        console.log(err.message);
+      }
+    });
 
     console.log("Edits saved");
-  };
-  // Reset items to original state
-  const cancelEdits = () => {
-    console.log("Edits Canceled");
   };
 
   // Handles button presses
@@ -56,7 +52,6 @@ const Table = (props) => {
       saveEdits();
     } else if (e.target.id === "cancel-edit") {
       console.log("Canceling edit");
-      cancelEdits();
     }
     setEditing(!editing);
   };

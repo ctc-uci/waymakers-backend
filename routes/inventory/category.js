@@ -51,12 +51,12 @@ categoryRouter.put('/:id', async (req, res) => {
   }
 });
 
-// Delete an item
-categoryRouter.delete('/:label', async (req, res) => {
+// Delete a category
+categoryRouter.delete('/:id', async (req, res) => {
   try {
-    const { label } = req.params;
-    await pool.query(`DELETE FROM categories WHERE id = ${label}`);
-    res.send(`Category with label ${label} was deleted.`);
+    const { id } = req.params;
+    await pool.query(`DELETE FROM categories WHERE id = ${id}`);
+    res.send(`Category with id ${id} was deleted.`);
   } catch (err) {
     console.error(err.message);
   }

@@ -16,11 +16,34 @@ inventoryRouter.get('/', async (req, res) => {
   }
 });
 
-// Get an item
+// Get an item by category
 inventoryRouter.get('/:category', async (req, res) => {
   const { category } = req.params;
   try {
     const item = await pool.query(`SELECT * FROM items WHERE category = '${category}'`);
+    res.send(item.rows);
+  } catch (err) {
+    console.error(err.message);
+  }
+});
+
+// SEARCH for an item with SUBSTRING
+inventoryRouter.get('/search/:substring', async (req, res) => {
+  try {
+    const { substring } = req.params;
+    console.log(substring);
+    const item = await pool.query(`SELECT * FROM items WHERE strpos('${substring}', name) > 0`);
+    res.send(item.rows);
+  } catch (err) {
+    console.error(err.message);
+  }
+});
+
+// SEARCH for an item with CATEGORY and SUBSTRING
+inventoryRouter.get('/search/:substring/:category', async (req, res) => {
+  try {
+    const { category, substring } = req.params;
+    const item = await pool.query(`SELECT * FROM items WHERE strpos('${substring}', name) > 0 AND category = '${category}'`);
     res.send(item.rows);
   } catch (err) {
     console.error(err.message);

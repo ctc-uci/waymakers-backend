@@ -45,7 +45,7 @@ const AddItem = () => {
   };
 
   return (
-    <Fragment>
+    <>
       {/**ADD ITEM BUTTON */}
       <form className="d-flex flex-column" onSubmit={onSubmitAddItem}>
         <input
@@ -86,7 +86,7 @@ const AddItem = () => {
         />
         <button className="btn btn-success">Add Category</button>
       </form>
-    </Fragment>
+    </>
   );
 };
 

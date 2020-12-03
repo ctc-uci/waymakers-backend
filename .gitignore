@@ -122,3 +122,6 @@ dist
 
 # Misc
 .DS_Store
+
+# AWS env variables
+postgres/.env

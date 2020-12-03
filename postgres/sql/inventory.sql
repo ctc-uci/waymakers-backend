@@ -5,5 +5,6 @@ CREATE TABLE items(
     name varchar(255),
     quantity INTEGER,
     needed INTEGER,
-    category varchar(255)
+    category varchar(255),
+    warehouse varchar(255)
 );

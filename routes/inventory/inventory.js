@@ -17,34 +17,36 @@ inventoryRouter.get('/', async (req, res) => {
 });
 
 // Get an item by WAREHOUSE
-inventoryRouter.get('search/', async (req, res) => {
-  const { warehouse, category, substring } = req.params;
+inventoryRouter.get('/get/', async (req, res) => {
+  const { warehouse } = req.query;
+  const { category } = req.query;
+  const { search } = req.query;
   let items;
   try {
     // GETTING EVERY ITEM!
-    if (substring === '' && category === '' && warehouse === '') {
+    if (warehouse === '' && category === '' && search === '') {
       items = await pool.query('SELECT * FROM items');
       // Searching with SUBSTRING
     } else if (warehouse === '' && category === '') {
-      items = await pool.query(`SELECT * FROM items WHERE strpos(name, '${substring}') > 0`);
+      items = await pool.query(`SELECT * FROM items WHERE strpos(name, '${search}') > 0`);
       // Searching with WAREHOUSE
-    } else if (category === '' && substring === '') {
-      items = await pool.query('SELECT * FROM items WHERE warehouse = warehouse');
+    } else if (category === '' && search === '') {
+      items = await pool.query(`SELECT * FROM items WHERE warehouse = '${warehouse}'`);
       // Searching with CATEGORY
-    } else if (warehouse === '' && substring === '') {
-      items = await pool.query(`SELECT * FROM items WHERE category = '${category}`);
+    } else if (warehouse === '' && search === '') {
+      items = await pool.query(`SELECT * FROM items WHERE category = '${category}'`);
       // Searching with CATEGORY and SUBSTRING
     } else if (warehouse === '') {
-      items = await pool.query(`SELECT * FROM items WHERE category = '${category}' AND strpos(name, '${substring}') > 0`);
+      items = await pool.query(`SELECT * FROM items WHERE category = '${category}' AND strpos(name, '${search}') > 0`);
       // Searching with WAREHOUSE and SUBSTRING
     } else if (category === '') {
-      items = await pool.query(`SELECT * FROM items WHERE warehouse = '${warehouse}' AND strpos(name, '${substring}') > 0`);
+      items = await pool.query(`SELECT * FROM items WHERE warehouse = '${warehouse}' AND strpos(name, '${search}') > 0`);
       // Searching with WAREHOUSE and CATEGORY
-    } else if (substring === '') {
-      items = await pool.query(`SELECT * FROM items WHERE warehouse = '${warehouse}' AND category = '${category}' > 0`);
+    } else if (search === '') {
+      items = await pool.query(`SELECT * FROM items WHERE warehouse = '${warehouse}' AND category = '${category}'`);
       // Searching with WAREHOUSE and CATEGORY and SUBSTRING
     } else {
-      items = await pool.query(`SELECT * FROM items WHERE warehouse = '${warehouse}' AND category = '${category}' > 0 AND strpos(name, '${substring}') > 0`);
+      items = await pool.query(`SELECT * FROM items WHERE warehouse = '${warehouse}' AND category = '${category}' AND strpos(name, '${search}') > 0`);
     }
     res.send(items.rows);
   } catch (err) {

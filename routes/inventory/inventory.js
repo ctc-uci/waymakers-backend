@@ -17,7 +17,7 @@ inventoryRouter.get('/', async (req, res) => {
 });
 
 // Get an item by category
-inventoryRouter.get('/:category', async (req, res) => {
+inventoryRouter.get('/category/:category', async (req, res) => {
   const { category } = req.params;
   try {
     const item = await pool.query(`SELECT * FROM items WHERE category = '${category}'`);

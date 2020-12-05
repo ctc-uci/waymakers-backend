@@ -23,31 +23,8 @@ inventoryRouter.get('/get/', async (req, res) => {
   const { search } = req.query;
   let items;
   try {
-    // GETTING EVERY ITEM!
-    if (warehouse === '' && category === '' && search === '') {
-      items = await pool.query('SELECT * FROM items');
-      // Searching with SUBSTRING
-    } else if (warehouse === '' && category === '') {
-      items = await pool.query(`SELECT * FROM items WHERE strpos(name, '${search}') > 0`);
-      // Searching with WAREHOUSE
-    } else if (category === '' && search === '') {
-      items = await pool.query(`SELECT * FROM items WHERE warehouse = '${warehouse}'`);
-      // Searching with CATEGORY
-    } else if (warehouse === '' && search === '') {
-      items = await pool.query(`SELECT * FROM items WHERE category = '${category}'`);
-      // Searching with CATEGORY and SUBSTRING
-    } else if (warehouse === '') {
-      items = await pool.query(`SELECT * FROM items WHERE category = '${category}' AND strpos(name, '${search}') > 0`);
-      // Searching with WAREHOUSE and SUBSTRING
-    } else if (category === '') {
-      items = await pool.query(`SELECT * FROM items WHERE warehouse = '${warehouse}' AND strpos(name, '${search}') > 0`);
-      // Searching with WAREHOUSE and CATEGORY
-    } else if (search === '') {
-      items = await pool.query(`SELECT * FROM items WHERE warehouse = '${warehouse}' AND category = '${category}'`);
-      // Searching with WAREHOUSE and CATEGORY and SUBSTRING
-    } else {
-      items = await pool.query(`SELECT * FROM items WHERE warehouse = '${warehouse}' AND category = '${category}' AND strpos(name, '${search}') > 0`);
-    }
+    items = await pool.query(`SELECT * FROM items WHERE (warehouse = '${warehouse}' OR '${warehouse}' = '') AND (category = '${category}' OR '${category}' = '') AND 
+      (strpos(name, '${search}') > 0 OR '${search}' = '')`);
     res.send(items.rows);
   } catch (err) {
     console.error(err.message);

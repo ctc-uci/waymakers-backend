@@ -1,4 +1,4 @@
 CREATE TABLE warehouses(
     id SERIAL PRIMARY KEY,
-    label varchar(255)
+    warehouseLabel varchar(255)
 )

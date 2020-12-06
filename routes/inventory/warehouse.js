@@ -16,10 +16,10 @@ warehouseRouter.get('/', async (req, res) => {
 });
 
 // Get a warehouse
-warehouseRouter.get('/:warehouseLabel', async (req, res) => {
-  const { warehouseLabel } = req.params;
+warehouseRouter.get('/:warehouselabel', async (req, res) => {
+  const { warehouselabel } = req.params;
   try {
-    const warehouse = await pool.query(`SELECT * FROM warehouses WHERE warehouseLabel = '${warehouseLabel}'`);
+    const warehouse = await pool.query(`SELECT * FROM warehouses WHERE warehouselabel = '${warehouselabel}'`);
     res.send(warehouse.rows);
   } catch (err) {
     console.error(err.message);
@@ -29,8 +29,8 @@ warehouseRouter.get('/:warehouseLabel', async (req, res) => {
 // Create a warehouse
 warehouseRouter.post('/', async (req, res) => {
   try {
-    const { warehouseLabel } = req.body;
-    const newWarehouse = await pool.query(`INSERT INTO warehouses (warehouseLabel) VALUES ('${warehouseLabel}') RETURNING *`);
+    const { warehouselabel } = req.body;
+    const newWarehouse = await pool.query(`INSERT INTO warehouses (warehouselabel) VALUES ('${warehouselabel}') RETURNING *`);
     res.send(newWarehouse.rows);
   } catch (err) {
     console.error(err.message);
@@ -42,9 +42,9 @@ warehouseRouter.put('/:id', async (req, res) => {
   try {
     const { id } = req.params;
     const {
-      warehouseLabel,
+      warehouselabel,
     } = req.body;
-    if (warehouseLabel) await pool.query(`UPDATE warehouses SET warehouseLabel = '${warehouseLabel}' WHERE id = ${id}`);
+    if (warehouselabel) await pool.query(`UPDATE warehouses SET warehouselabel = '${warehouselabel}' WHERE id = ${id}`);
     res.send(`Warehouse with id ${id} was updated!`);
   } catch (err) {
     console.error(err.message);

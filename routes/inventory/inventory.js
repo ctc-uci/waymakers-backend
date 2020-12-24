@@ -18,9 +18,7 @@ inventoryRouter.get('/', async (req, res) => {
 
 // Get an item by WAREHOUSE
 inventoryRouter.get('/get/', async (req, res) => {
-  const { warehouse } = req.query;
-  const { category } = req.query;
-  const { search } = req.query;
+  const { warehouse, category, search } = req.query;
   let items;
   try {
     items = await pool.query(`SELECT * FROM items WHERE (warehouse = '${warehouse}' OR '${warehouse}' = '') AND (category = '${category}' OR '${category}' = '') AND 

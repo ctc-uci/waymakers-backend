@@ -35,9 +35,9 @@ inventoryRouter.get('/get/', async (req, res) => {
 inventoryRouter.post('/', async (req, res) => {
   try {
     const {
-      name, quantity, needed, division, category,
+      name, quantity, needed, division,
     } = req.body;
-    console.log(name, quantity, needed, division, category);
+    const category = req.body.category === '' ? null : req.body.category;
     const newItem = await pool.query(`INSERT INTO items (name, quantity, needed, div_num, category_id) VALUES ('${name}', '${quantity}', '${needed}' , (SELECT id from divisions WHERE div_name='${division}'), (SELECT id from item_categories WHERE label='${category}'))`);
     res.send(newItem.rows);
   } catch (err) {

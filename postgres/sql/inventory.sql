@@ -3,7 +3,7 @@ CREATE DATABASE inventory;
 DROP TABLE items;
 
 CREATE TABLE items
-( id INT PRIMARY KEY,
+( id SERIAL PRIMARY KEY,
   name varchar(255),
   quantity INT,
   needed INT,

@@ -8,7 +8,7 @@ categoryRouter.use(express.json());
 // Get all categories
 categoryRouter.get('/', async (req, res) => {
   try {
-    const allCategories = await pool.query('SELECT * FROM categories');
+    const allCategories = await pool.query('SELECT * FROM item_categories');
     res.send(allCategories.rows);
   } catch (err) {
     console.error(err.message);
@@ -19,7 +19,7 @@ categoryRouter.get('/', async (req, res) => {
 categoryRouter.get('/:label', async (req, res) => {
   const { label } = req.params;
   try {
-    const category = await pool.query(`SELECT * FROM categories WHERE label = '${label}'`);
+    const category = await pool.query(`SELECT * FROM item_categories WHERE label = '${label}'`);
     res.send(category.rows);
   } catch (err) {
     console.error(err.message);
@@ -30,7 +30,7 @@ categoryRouter.get('/:label', async (req, res) => {
 categoryRouter.post('/', async (req, res) => {
   try {
     const { label } = req.body;
-    const newCategory = await pool.query(`INSERT INTO categories (label) VALUES ('${label}') RETURNING *`);
+    const newCategory = await pool.query(`INSERT INTO item_categories (label) VALUES ('${label}') RETURNING *`);
     res.send(newCategory.rows);
   } catch (err) {
     console.error(err.message);
@@ -44,7 +44,7 @@ categoryRouter.put('/:id', async (req, res) => {
     const {
       label,
     } = req.body;
-    if (label) await pool.query(`UPDATE categories SET label = '${label}' WHERE id = ${id}`);
+    if (label) await pool.query(`UPDATE item_categories SET label = '${label}' WHERE id = ${id}`);
     res.send(`Category with id ${id} was updated!`);
   } catch (err) {
     console.error(err.message);
@@ -55,7 +55,7 @@ categoryRouter.put('/:id', async (req, res) => {
 categoryRouter.delete('/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    await pool.query(`DELETE FROM categories WHERE id = ${id}`);
+    await pool.query(`DELETE FROM item_categories WHERE id = ${id}`);
     res.send(`Category with id ${id} was deleted.`);
   } catch (err) {
     console.error(err.message);

@@ -21,9 +21,10 @@ inventoryRouter.get('/get/', async (req, res) => {
   const {
     division, category, search,
   } = req.query;
+  console.log(division, category, search);
   try {
     const items = await pool.query(`SELECT * FROM items WHERE (div_num = (SELECT id FROM divisions WHERE div_name='${division}') OR '${division}' = '') AND 
-    (category_id = (SELECT id FROM item_categories WHERE label='${category}') OR '${category}' = '') AND 
+    (category_id = (SELECT id FROM item_categories WHERE (LOWER(label)=LOWER('${category}'))) OR '${category}' = '') AND 
     (LOWER(name) LIKE LOWER('%${search}%') OR '${search}' = '')`);
     res.send(items.rows);
   } catch (err) {
@@ -38,7 +39,7 @@ inventoryRouter.post('/', async (req, res) => {
       name, quantity, needed, division,
     } = req.body;
     const category = req.body.category === '' ? null : req.body.category;
-    const newItem = await pool.query(`INSERT INTO items (name, quantity, needed, div_num, category_id) VALUES ('${name}', '${quantity}', '${needed}' , (SELECT id from divisions WHERE div_name='${division}'), (SELECT id from item_categories WHERE label='${category}'))`);
+    const newItem = await pool.query(`INSERT INTO items (name, quantity, needed, div_num, category_id) VALUES ('${name}', '${quantity}', '${needed}' , (SELECT id from divisions WHERE div_name='${division}'), (SELECT id from item_categories WHERE (LOWER(label)=LOWER('${category}'))))`);
     res.send(newItem.rows);
   } catch (err) {
     console.error(err.message);

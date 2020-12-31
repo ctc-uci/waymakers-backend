@@ -18,13 +18,13 @@ inventoryRouter.get('/', async (req, res) => {
 
 // Get an item by WAREHOUSE
 inventoryRouter.get('/get/', async (req, res) => {
-  const {
-    division, category, search,
-  } = req.query;
+  const division = req.query.division == null ? '' : req.query.division;
+  const category = req.query.category == null ? '' : req.query.category;
+  const { search } = req.query;
   console.log(division, category, search);
   try {
-    const items = await pool.query(`SELECT * FROM items WHERE (div_num = (SELECT id FROM divisions WHERE div_name='${division}') OR '${division}' = '') AND 
-    (category_id = (SELECT id FROM item_categories WHERE (LOWER(label)=LOWER('${category}'))) OR '${category}' = '') AND 
+    const items = await pool.query(`SELECT * FROM items WHERE (div_num = ${division} OR '${division}' = '') AND 
+    (category_id =${category} OR '${category}' = '') AND 
     (LOWER(name) LIKE LOWER('%${search}%') OR '${search}' = '')`);
     res.send(items.rows);
   } catch (err) {

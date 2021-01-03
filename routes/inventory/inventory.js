@@ -6,18 +6,9 @@ const pool = require('../../postgres/config');
 
 inventoryRouter.use(express.json());
 
-// Get all item
+// Get items; defaults to all items
+// Optional query params: division id, category id, search term to filter
 inventoryRouter.get('/', async (req, res) => {
-  try {
-    const allItems = await pool.query('SELECT * FROM items');
-    res.send(allItems.rows);
-  } catch (err) {
-    console.error(err.message);
-  }
-});
-
-// Get an item by WAREHOUSE
-inventoryRouter.get('/get/', async (req, res) => {
   const division = req.query.division == null ? -1 : req.query.division;
   const category = req.query.category == null ? -1 : req.query.category;
   const { search } = req.query;

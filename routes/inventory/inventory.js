@@ -18,13 +18,12 @@ inventoryRouter.get('/', async (req, res) => {
 
 // Get an item by WAREHOUSE
 inventoryRouter.get('/get/', async (req, res) => {
-  const division = req.query.division == null ? '' : req.query.division;
-  const category = req.query.category == null ? '' : req.query.category;
+  const division = req.query.division == null ? -1 : req.query.division;
+  const category = req.query.category == null ? -1 : req.query.category;
   const { search } = req.query;
-  console.log(division, category, search);
   try {
-    const items = await pool.query(`SELECT * FROM items WHERE (div_num = ${division} OR '${division}' = '') AND 
-    (category_id =${category} OR '${category}' = '') AND 
+    const items = await pool.query(`SELECT * FROM items WHERE (${division}=-1 OR div_num = ${division}) AND 
+    (${category}=-1 OR category_id =${category}) AND 
     (LOWER(name) LIKE LOWER('%${search}%') OR '${search}' = '')`);
     res.send(items.rows);
   } catch (err) {
@@ -68,7 +67,7 @@ inventoryRouter.delete('/:id', async (req, res) => {
   try {
     const { id } = req.params;
     await pool.query(`DELETE FROM items WHERE id = ${id}`);
-    res.send(`Item with id ${id} was deleted.`);
+    res.send(`Item with id ${id} was deleted!`);
   } catch (err) {
     console.error(err.message);
   }

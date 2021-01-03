@@ -56,7 +56,7 @@ categoryRouter.delete('/:id', async (req, res) => {
   try {
     const { id } = req.params;
     await pool.query(`DELETE FROM item_categories WHERE id = ${id}`);
-    res.send(`Category with id ${id} was deleted.`);
+    res.send(`Category with id ${id} was deleted!`);
   } catch (err) {
     console.error(err.message);
   }

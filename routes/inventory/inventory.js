@@ -43,15 +43,11 @@ inventoryRouter.put('/:id', async (req, res) => {
     const {
       name, quantity, needed, category,
     } = req.body;
+    console.log(category);
     if (name) await pool.query(`UPDATE items SET name = '${name}' WHERE id = ${id}`);
-    if (quantity) await pool.query(`UPDATE items SET quantity = '${quantity}' WHERE id = ${id}`);
-    if (needed) await pool.query(`UPDATE items SET needed = '${needed}' WHERE id = ${id}`);
-    // Setting category to NULL when empty category is passed as a parameter
-    if (category === null) {
-      await pool.query(`UPDATE items SET category_id = NULL WHERE id = ${id}`);
-    } else {
-      await pool.query(`UPDATE items SET category_id = ${category} WHERE id = ${id}`);
-    }
+    if (quantity) await pool.query(`UPDATE items SET quantity = ${quantity} WHERE id = ${id}`);
+    if (needed) await pool.query(`UPDATE items SET needed = ${needed} WHERE id = ${id}`);
+    if (category !== null) await pool.query(`UPDATE items SET category_id = ${category} WHERE id = ${id}`);
     res.send(`Item with id ${id} was updated!`);
   } catch (err) {
     console.error(err.message);

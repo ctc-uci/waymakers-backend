@@ -13,7 +13,7 @@ CREATE TABLE items
 	FOREIGN KEY (category_id)
 	REFERENCES categories (id)
  	ON UPDATE CASCADE
- 	ON DELETE SET null,
+ 	ON DELETE SET NULL,
   CONSTRAINT div_id
     FOREIGN KEY (div_num)
     REFERENCES divisions (div_num)

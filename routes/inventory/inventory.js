@@ -29,7 +29,8 @@ inventoryRouter.post('/', async (req, res) => {
       name, quantity, needed,
     } = req.body;
     const category = req.body.category ? req.body.category : null;
-    const newItem = await pool.query(`INSERT INTO items (name, quantity, needed, div_num, category_id) VALUES ('${name}', '${quantity}', '${needed}' , (SELECT id from divisions WHERE div_name='${req.body.division}'), ${category})`);
+    const division = req.body.division ? req.body.division : null;
+    const newItem = await pool.query(`INSERT INTO items (name, quantity, needed, div_num, category_id) VALUES ('${name}', '${quantity}', '${needed}' , (SELECT id from divisions WHERE LOWER(div_name)=LOWER('${division}')), ${category})`);
     res.send(newItem.rows);
   } catch (err) {
     console.error(err.message);
@@ -43,7 +44,6 @@ inventoryRouter.put('/:id', async (req, res) => {
     const {
       name, quantity, needed, category,
     } = req.body;
-    console.log(category);
     if (name) await pool.query(`UPDATE items SET name = '${name}' WHERE id = ${id}`);
     if (quantity) await pool.query(`UPDATE items SET quantity = ${quantity} WHERE id = ${id}`);
     if (needed) await pool.query(`UPDATE items SET needed = ${needed} WHERE id = ${id}`);

@@ -28,9 +28,10 @@ inventoryRouter.post('/', async (req, res) => {
     const {
       name, quantity, needed,
     } = req.body;
-    const category = req.body.category ? req.body.category : null;
-    const division = req.body.division ? req.body.division : null;
-    const newItem = await pool.query(`INSERT INTO items (name, quantity, needed, div_num, category_id) VALUES ('${name}', '${quantity}', '${needed}' , (SELECT id from divisions WHERE LOWER(div_name)=LOWER('${division}')), ${category})`);
+    // We need to set category and division to null if there's no input so SQL doesn't cry about it
+    const category = req.body.category ? req.body.category : null; // Category ID
+    const division = req.body.division ? req.body.division : null; // Division ID
+    const newItem = await pool.query(`INSERT INTO items (name, quantity, needed, div_num, category_id) VALUES ('${name}', '${quantity}', '${needed}' , ${division}, ${category})`);
     res.send(newItem.rows);
   } catch (err) {
     console.error(err.message);

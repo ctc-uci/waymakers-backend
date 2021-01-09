@@ -29,9 +29,12 @@ divisionRouter.get('/:label', async (req, res) => {
 // Create a division
 divisionRouter.post('/', async (req, res) => {
   try {
-    const { label } = req.body;
-    const newDivision = await pool.query(`INSERT INTO divisions (div_name) VALUES ('${label}') RETURNING *`);
-    res.send(newDivision.rows);
+    const { divisionLabel } = req.body;
+    console.log(divisionLabel);
+    if (divisionLabel) {
+      const newDivision = await pool.query(`INSERT INTO divisions (div_name) VALUES ('${divisionLabel}') RETURNING *`);
+      res.send(newDivision.rows);
+    }
   } catch (err) {
     console.error(err.message);
   }

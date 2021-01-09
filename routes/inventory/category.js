@@ -30,8 +30,10 @@ categoryRouter.get('/:label', async (req, res) => {
 categoryRouter.post('/', async (req, res) => {
   try {
     const { label } = req.body;
-    const newCategory = await pool.query(`INSERT INTO item_categories (label) VALUES ('${label}') RETURNING *`);
-    res.send(newCategory.rows);
+    if (label) {
+      const newCategory = await pool.query(`INSERT INTO item_categories (label) VALUES ('${label}') RETURNING *`);
+      res.send(newCategory.rows);
+    }
   } catch (err) {
     console.error(err.message);
   }

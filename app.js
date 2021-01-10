@@ -8,7 +8,7 @@ const accountRouter = require('./routes/accounts/accounts');
 const eventRouter = require('./routes/events/events');
 
 const app = express();
-const port = 3000;
+const port = 3001;
 
 app.use(bodyParser.json());
 app.use(cors());
@@ -17,6 +17,7 @@ app.use(
     extended: true,
   }),
 );
+app.use(cors());
 
 app.use('/accounts', accountRouter);
 app.use('/events', eventRouter);

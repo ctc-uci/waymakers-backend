@@ -31,7 +31,7 @@ inventoryRouter.post('/', async (req, res) => {
     // We need to set category and division to null if there's no input so SQL doesn't cry about it
     const category = req.body.category ? req.body.category : null; // Category ID
     const division = req.body.division ? req.body.division : null; // Division ID
-    const newItem = await pool.query(`INSERT INTO items (name, quantity, needed, div_num, category_id) VALUES ('${name}', '${quantity}', '${needed}' , ${division}, ${category})`);
+    const newItem = await pool.query(`INSERT INTO items (name, quantity, needed, div_num, category_id, last_edited) VALUES ('${name}', '${quantity}', '${needed}' , ${division}, ${category}, (SELECT NOW()::timestamp))`);
     res.send(newItem.rows);
   } catch (err) {
     console.error(err.message);
@@ -48,8 +48,9 @@ inventoryRouter.put('/:id', async (req, res) => {
     if (name) await pool.query(`UPDATE items SET name = '${name}' WHERE id = ${id}`);
     if (quantity) await pool.query(`UPDATE items SET quantity = ${quantity} WHERE id = ${id}`);
     if (needed) await pool.query(`UPDATE items SET needed = ${needed} WHERE id = ${id}`);
-    if (category !== '') await pool.query(`UPDATE items SET category_id = ${category} WHERE id = ${id}`);
+    if (category) await pool.query(`UPDATE items SET category_id = ${category} WHERE id = ${id}`);
     else await pool.query(`UPDATE items SET category_id = NULL WHERE id = ${id}`);
+    await pool.query(`UPDATE items SET last_edited = (SELECT NOW()::timestamp) WHERE id = ${id}`);
     res.send(`Item with id ${id} was updated!`);
   } catch (err) {
     console.error(err.message);

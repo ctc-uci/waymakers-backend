@@ -9,6 +9,7 @@ CREATE TABLE items
   needed INT,
   div_num INT,
   category_id INT,
+  last_edited TIMESTAMP,
   CONSTRAINT cat_id
 	FOREIGN KEY (category_id)
 	REFERENCES categories (id)

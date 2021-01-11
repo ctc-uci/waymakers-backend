@@ -26,9 +26,8 @@ inventoryRouter.get('/', async (req, res) => {
 inventoryRouter.get('/top/', async (req, res) => {
   const numItems = req.query.numItems == null ? 3 : req.query.numItems;
   try {
-    const items = await pool.query('SELECT * FROM items ORDER BY last_edited DESC');
-    const toSend = items.rows.slice(0, Math.min(items.rows.length, numItems));
-    res.send(toSend);
+    const items = await pool.query(`SELECT * FROM items ORDER BY last_edited DESC LIMIT ${numItems}`);
+    res.send(items.rows);
   } catch (err) {
     console.error(err.message);
   }

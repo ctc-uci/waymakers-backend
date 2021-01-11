@@ -81,4 +81,22 @@ eventRouter.delete('/:id', async (req, res) => {
   }
 });
 
+// Add log for user's event hours
+eventRouter.post('/log-hours', async (req, res) => {
+  console.log(req.body);
+  try {
+    const {
+      userId, eventId, logStart, logEnd, totalHours,
+    } = req.body;
+    // const lastEvent = await pool.query('SELECT * FROM events ORDER BY event_id DESC LIMIT 1');
+    // const eventID = Number(lastEvent.rows[0].event_id) + 1;
+    await pool.query(`INSERT INTO log_hours
+                    (userid, event_id, log_start, log_end, total_hours) 
+                    VALUES ('${userId}', '${eventId}', '${logStart}', '${logEnd}', '${totalHours}')`);
+    res.send('nAdd');
+  } catch (err) {
+    console.error(err.message);
+  }
+});
+
 module.exports = eventRouter;

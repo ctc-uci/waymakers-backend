@@ -22,6 +22,18 @@ inventoryRouter.get('/', async (req, res) => {
   }
 });
 
+// Gets the X most recently edited items (3 by default)
+inventoryRouter.get('/top/', async (req, res) => {
+  const numItems = req.query.numItems == null ? 3 : req.query.numItems;
+  try {
+    const items = await pool.query('SELECT * FROM items ORDER BY last_edited DESC');
+    const toSend = items.rows.slice(0, Math.min(items.rows.length, numItems));
+    res.send(toSend);
+  } catch (err) {
+    console.error(err.message);
+  }
+});
+
 // Create an item
 inventoryRouter.post('/', async (req, res) => {
   try {
@@ -45,12 +57,12 @@ inventoryRouter.put('/:id', async (req, res) => {
     const {
       name, quantity, needed, category,
     } = req.body;
+    await pool.query(`UPDATE items SET last_edited = (SELECT NOW()::timestamp) WHERE id = ${id}`);
     if (name) await pool.query(`UPDATE items SET name = '${name}' WHERE id = ${id}`);
     if (quantity) await pool.query(`UPDATE items SET quantity = ${quantity} WHERE id = ${id}`);
     if (needed) await pool.query(`UPDATE items SET needed = ${needed} WHERE id = ${id}`);
     if (category) await pool.query(`UPDATE items SET category_id = ${category} WHERE id = ${id}`);
     else await pool.query(`UPDATE items SET category_id = NULL WHERE id = ${id}`);
-    await pool.query(`UPDATE items SET last_edited = (SELECT NOW()::timestamp) WHERE id = ${id}`);
     res.send(`Item with id ${id} was updated!`);
   } catch (err) {
     console.error(err.message);

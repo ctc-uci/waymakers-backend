@@ -20,8 +20,8 @@ eventRouter.get('/', async (req, res) => {
 eventRouter.get('/:id', async (req, res) => {
   const { id } = req.params;
   try {
-    const allEvents = await pool.query(`SELECT * FROM events WHERE event_id = '${id}'`);
-    res.send(allEvents.rows);
+    const event = await pool.query(`SELECT * FROM events WHERE eventid = ${id}::varchar`);
+    res.send(event.rows);
   } catch (err) {
     console.error(err.message);
   }
@@ -34,10 +34,10 @@ eventRouter.post('/add', async (req, res) => {
     const {
       eventName, eventType, eventLocation, eventDescription, startTime, endTime, isAllDay,
     } = req.body;
-    const lastEvent = await pool.query('SELECT * FROM events ORDER BY event_id DESC LIMIT 1');
+    const lastEvent = await pool.query('SELECT * FROM events ORDER BY eventid DESC LIMIT 1');
     const eventID = Number(lastEvent.rows[0].event_id) + 1;
     const newEvent = await pool.query(`INSERT INTO events 
-                                      (event_id, event_name, event_type, event_location, event_description, start_time, end_time, all_day) 
+                                      (eventid, eventname, eventtype, eventlocation, eventdescription, starttime, endtime, allday) 
                                       VALUES ('${eventID}', '${eventName}', '${eventType}', '${eventLocation}', '${eventDescription}', '${startTime}', '${endTime}', '${isAllDay}') 
                                       RETURNING *`);
     res.send(newEvent.rows);
@@ -56,14 +56,14 @@ eventRouter.put('/:id', async (req, res) => {
       eventName, eventType, eventLocation, eventDescription, startTime, endTime, isAllDay,
     } = req.body;
     await pool.query(`UPDATE events 
-                      SET event_name = '${eventName}', 
-                      event_type = '${eventType}', 
-                      event_location = '${eventLocation}',
-                      event_description = '${eventDescription}', 
-                      start_time = '${startTime}', 
-                      end_time = '${endTime}', 
-                      all_day = '${isAllDay}' 
-                      WHERE event_id = '${id}'`);
+                      SET eventName = '${eventName}', 
+                      eventType = '${eventType}', 
+                      eventLocation = '${eventLocation}',
+                      eventDescription = '${eventDescription}', 
+                      startTime = '${startTime}', 
+                      endTime = '${endTime}', 
+                      allDay = '${isAllDay}' 
+                      WHERE eventId = '${id}'`);
     res.send(`event with id ${id} was updated!`);
   } catch (err) {
     console.error(err.message);
@@ -74,7 +74,7 @@ eventRouter.put('/:id', async (req, res) => {
 eventRouter.delete('/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    await pool.query(`DELETE FROM events WHERE event_id = '${id}'`);
+    await pool.query(`DELETE FROM events WHERE eventid = '${id}'`);
     res.send(`Event with id ${id} was deleted.`);
   } catch (err) {
     console.error(err.message);
@@ -82,18 +82,27 @@ eventRouter.delete('/:id', async (req, res) => {
 });
 
 // Add log for user's event hours
-eventRouter.post('/log-hours', async (req, res) => {
+eventRouter.post('/loghours', async (req, res) => {
   console.log(req.body);
   try {
     const {
-      userId, eventId, logStart, logEnd, totalHours,
+      userId, eventId, logStart, logEnd, totalHours, additionalnotes, division,
     } = req.body;
-    // const lastEvent = await pool.query('SELECT * FROM events ORDER BY event_id DESC LIMIT 1');
-    // const eventID = Number(lastEvent.rows[0].event_id) + 1;
-    await pool.query(`INSERT INTO log_hours
-                    (userid, event_id, log_start, log_end, total_hours) 
-                    VALUES ('${userId}', '${eventId}', '${logStart}', '${logEnd}', '${totalHours}')`);
-    res.send('nAdd');
+    await pool.query(`INSERT INTO loghours
+                    (userid, eventid, logstart, logend, totalhours, additionalnotes, division) 
+                    VALUES ('${userId}', '${eventId}', '${logStart}', '${logEnd}', '${totalHours}', '${additionalnotes}', '${division}')`);
+    res.send(`Added log for userId ${userId}`);
+  } catch (err) {
+    console.error(err.message);
+  }
+});
+
+// Get log for user id
+eventRouter.get('/log/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const userLogs = await pool.query(`SELECT * FROM loghours WHERE userid='${id}'`);
+    res.send(userLogs.rows);
   } catch (err) {
     console.error(err.message);
   }

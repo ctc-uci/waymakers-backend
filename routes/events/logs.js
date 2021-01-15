@@ -21,11 +21,15 @@ function convertLogSnakeToCamel(logs) {
 // Get all logs
 logRouter.get('/', async (req, res) => {
   try {
-    let logs = await pool.query('SELECT * FROM log_hours');
-    logs = convertLogSnakeToCamel(logs.rows);
-    res.send(logs);
+    const logs = await pool.query(`SELECT log_hours.*, events.* 
+                                FROM log_hours
+                                INNER JOIN events 
+                                ON log_hours.event_id = events.event_id;`);
+    // logs = convertLogSnakeToCamel(logs.rows);
+    res.status(200).send(logs.rows);
   } catch (err) {
     console.error(err.message);
+    res.status(500).send(err.message);
   }
 });
 
@@ -36,12 +40,18 @@ logRouter.post('/add', async (req, res) => {
     const {
       userId, eventId, logStart, logEnd, totalHours, additionalNotes,
     } = req.body;
-    await pool.query(`INSERT INTO log_hours
+    const response = await pool.query(`INSERT INTO log_hours
                         (userid, event_id, log_start, log_end, total_hours, additional_notes) 
-                        VALUES ('${userId}', ${eventId}, '${logStart}', '${logEnd}', ${totalHours}, '${additionalNotes}')`);
-    res.send(`Added log for userId ${userId}`);
+                        VALUES ('${userId}', ${eventId}, '${logStart}', '${logEnd}', ${totalHours}, '${additionalNotes}')
+                        RETURNING *`);
+    if (response.rowCount === 0) {
+      res.status(400).send(response);
+    } else {
+      res.status(200).send(response);
+    }
   } catch (err) {
     console.error(err.message);
+    res.status(500).send(err.message);
   }
 });
 
@@ -52,9 +62,14 @@ logRouter.get('/:id', async (req, res) => {
   try {
     let userLogs = await pool.query(`SELECT * FROM log_hours WHERE userid='${id}'`);
     userLogs = convertLogSnakeToCamel(userLogs.rows);
-    res.send(userLogs);
+    if (userLogs.length === 0) {
+      res.status(400).send(userLogs);
+    } else {
+      res.status(200).send(userLogs);
+    }
   } catch (err) {
     console.error(err.message);
+    res.status(500).send(err.message);
   }
 });
 

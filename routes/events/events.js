@@ -11,7 +11,7 @@ function convertEventSnakeToCamel(events) {
     title: event.event_name,
     startTime: event.start_time,
     endTime: event.end_time,
-    eventType: event.event_type,
+    division: event.division,
     location: event.event_location,
     description: event.event_description,
     id: event.event_id,

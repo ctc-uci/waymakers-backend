@@ -7,14 +7,15 @@ const pool = require('../../postgres/config');
 inventoryRouter.use(express.json());
 
 // Get items; defaults to all items
-// Optional query params: division id, category id, search term to filter
+// Optional query params: division id, category id, warehouse id search term to filter
 inventoryRouter.get('/', async (req, res) => {
   const division = req.query.division == null ? -1 : req.query.division;
   const category = req.query.category == null ? -1 : req.query.category;
+  const warehouse = req.query.warehouse == null ? -1 : req.query.warehouse;
   const { search } = req.query;
   try {
     const items = await pool.query(`SELECT * FROM items WHERE (${division}=-1 OR div_num = ${division}) AND 
-    (${category}=-1 OR category_id =${category}) AND 
+    (${category}=-1 OR category_id =${category}) AND (${warehouse}=-1 OR warehouse_num = ${warehouse}) AND
     (LOWER(name) LIKE LOWER('%${search}%') OR '${search}' = '')`);
     res.send(items.rows);
   } catch (err) {
@@ -42,7 +43,8 @@ inventoryRouter.post('/', async (req, res) => {
     // We need to set category and division to null if there's no input so SQL doesn't cry about it
     const category = req.body.category ? req.body.category : null; // Category ID
     const division = req.body.division ? req.body.division : null; // Division ID
-    const newItem = await pool.query(`INSERT INTO items (name, quantity, needed, div_num, category_id, last_edited) VALUES ('${name}', '${quantity}', '${needed}' , ${division}, ${category}, (SELECT NOW()::timestamp))`);
+    const warehouse = req.body.division ? req.body.warehouse : null; // Division ID
+    const newItem = await pool.query(`INSERT INTO items (name, quantity, needed, div_num, warehouse_num, category_id, last_edited) VALUES ('${name}', '${quantity}', '${needed}' , ${division}, ${warehouse}, ${category}, (SELECT NOW()::timestamp))`);
     res.send(newItem.rows);
   } catch (err) {
     console.error(err.message);

@@ -1,13 +1,10 @@
-CREATE DATABASE inventory;
-
-DROP TABLE items;
-
 CREATE TABLE items
 ( id SERIAL PRIMARY KEY,
   name varchar(255),
   quantity INT,
   needed INT,
   div_num INT,
+  warehouse_num INT,
   category_id INT,
   last_edited TIMESTAMP,
   CONSTRAINT cat_id

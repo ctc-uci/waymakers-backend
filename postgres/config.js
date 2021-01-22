@@ -2,11 +2,11 @@ const { Pool } = require('pg');
 require('dotenv').config();
 
 const pool = new Pool({
-  user: process.env.AWS_USER,
-  host: process.env.AWS_HOST,
-  database: process.env.AWS_DATABASE,
-  password: process.env.AWS_PASSWORD,
-  port: process.env.AWS_PORT,
+  user: process.env.REACT_APP_AWS_USER,
+  host: process.env.REACT_APP_AWS_HOST,
+  database: process.env.REACT_APP_AWS_DATABASE,
+  password: process.env.REACT_APP_AWS_PASSWORD,
+  port: process.env.REACT_APP_AWS_PORT,
 });
 
 module.exports = pool;

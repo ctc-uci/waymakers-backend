@@ -71,9 +71,6 @@ web_modules/
 # dotenv environment variables file
 .env.*
 
-# admin-sdk config file
-waymakers-6465d-firebase-adminsdk-2wasv-0fba3e25c9.json
-
 # parcel-bundler cache (https://parceljs.org/)
 .cache
 .parcel-cache
@@ -125,6 +122,3 @@ dist
 
 # Misc
 .DS_Store
-
-# .env
-.env*

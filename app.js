@@ -1,7 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-const { authRouter, verifyToken } = require('./routes/auth/auth');
 // const db = require("./postgres/config.js");
 
 // routes
@@ -20,9 +19,8 @@ app.use(
 );
 app.use(cors());
 
-app.use('/accounts', [verifyToken, accountRouter]);
-app.use('/events', [verifyToken, eventRouter]);
-app.use('/auth', authRouter);
+app.use('/accounts', accountRouter);
+app.use('/events', eventRouter);
 
 app.listen(port, () => {
   console.log(`App listening at http://localhost:${port}`);

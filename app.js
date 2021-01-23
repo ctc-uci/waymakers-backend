@@ -10,13 +10,14 @@ require('dotenv').config();
 // routes
 const accountRouter = require('./routes/accounts/accounts');
 const eventRouter = require('./routes/events/events');
+const volunteerDataRouter = require('./routes/events/volunteerData');
 
 const app = express();
 
 const port = 3001;
 
 const reactAppHost = process.env.WMK_REACT_APP_HOST;
-const reactAppPort = process.env.WMK_REACT_APP_PORT
+const reactAppPort = process.env.WMK_REACT_APP_PORT;
 
 app.use(bodyParser.json());
 app.use(cookieParser());
@@ -27,9 +28,10 @@ app.use(
 );
 app.use(cors({
   credentials: true,
-  origin: `${reactAppHost}:${reactAppPort}`
+  origin: `${reactAppHost}:${reactAppPort}`,
 }));
 
+app.use('/volunteerData', volunteerDataRouter);
 app.use('/accounts', [verifyToken, accountRouter]);
 app.use('/events', [verifyToken, eventRouter]);
 app.use('/auth', authRouter);

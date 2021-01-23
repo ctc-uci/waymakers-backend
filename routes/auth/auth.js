@@ -15,7 +15,7 @@ const verifyToken = async (req, res, next) => {
   try {
     const decodedToken = await admin.auth().verifyIdToken(accessToken);
     if (!decodedToken) {
-      throw { error: 'empty token from firebase' };
+      return res.status(400).send('Empty token from firebase');
     }
     console.log(decodedToken);
 

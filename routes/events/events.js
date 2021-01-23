@@ -16,6 +16,16 @@ eventRouter.get('/', async (req, res) => {
   }
 });
 
+// Get top volunteers
+eventRouter.get('/', async (req, res) => {
+  try {
+    const allEvents = await pool.query('SELECT * FROM events');
+    res.send(allEvents.rows);
+  } catch (err) {
+    console.error(err.message);
+  }
+});
+
 // Get an event
 eventRouter.get('/:id', async (req, res) => {
   const { id } = req.params;

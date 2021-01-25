@@ -70,6 +70,7 @@ web_modules/
 
 # dotenv environment variables file
 .env.*
+.env
 
 # admin-sdk config file
 waymakers-6465d-firebase-adminsdk-2wasv-0fba3e25c9.json

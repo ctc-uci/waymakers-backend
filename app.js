@@ -8,7 +8,11 @@ const { authRouter, verifyToken } = require('./routes/auth/auth');
 require('dotenv').config();
 
 // routes
+const inventoryRouter = require('./routes/inventory/inventory');
 const accountRouter = require('./routes/accounts/accounts');
+const categoryRouter = require('./routes/inventory/category');
+const divisionRouter = require('./routes/inventory/divisions');
+const warehouseRouter = require('./routes/inventory/warehouse');
 const eventRouter = require('./routes/events/events');
 
 const app = express();
@@ -16,7 +20,7 @@ const app = express();
 const port = 3001;
 
 const reactAppHost = process.env.WMK_REACT_APP_HOST;
-const reactAppPort = process.env.WMK_REACT_APP_PORT
+const reactAppPort = process.env.WMK_REACT_APP_PORT;
 
 app.use(bodyParser.json());
 app.use(cookieParser());
@@ -27,9 +31,13 @@ app.use(
 );
 app.use(cors({
   credentials: true,
-  origin: `${reactAppHost}:${reactAppPort}`
+  origin: `${reactAppHost}:${reactAppPort}`,
 }));
 
+app.use('/inventory', [verifyToken, inventoryRouter]);
+app.use('/category', [verifyToken, categoryRouter]);
+app.use('/divisions', [verifyToken, divisionRouter]);
+app.use('/warehouses', [verifyToken, warehouseRouter]);
 app.use('/accounts', [verifyToken, accountRouter]);
 app.use('/events', [verifyToken, eventRouter]);
 app.use('/auth', authRouter);

@@ -8,17 +8,22 @@ volunteerDataRouter.use(express.json());
 
 // Get Top 4 Volunteers
 volunteerDataRouter.get('/top/', async (req, res) => {
+  const { event } = req.query;
+  console.log(event);
   try {
     const allEvents = await pool.query(`SELECT log_hours.userid, firstname, lastname, SUM(total_hours) FROM log_hours
                                         INNER JOIN users ON
                                             log_hours.userid=users.userid
+                                        WHERE
+                                          log_hours.event_id = $1
                                         GROUP BY
                                             log_hours.userid,
                                             firstname,
                                             lastname
                                         ORDER BY
                                             SUM(total_hours) DESC
-                                        LIMIT 4`);
+                                        LIMIT 4`,
+    [event]);
     res.status(200).send(allEvents.rows);
   } catch (err) {
     console.error(err.message);

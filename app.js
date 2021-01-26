@@ -14,9 +14,9 @@ const categoryRouter = require('./routes/inventory/category');
 const divisionRouter = require('./routes/inventory/divisions');
 const warehouseRouter = require('./routes/inventory/warehouse');
 const eventRouter = require('./routes/events/events');
+const logRouter = require('./routes/events/logs');
 
 const app = express();
-
 const port = 3001;
 
 const reactAppHost = process.env.WMK_REACT_APP_HOST;
@@ -41,6 +41,7 @@ app.use('/warehouses', [verifyToken, warehouseRouter]);
 app.use('/accounts', [verifyToken, accountRouter]);
 app.use('/events', [verifyToken, eventRouter]);
 app.use('/auth', authRouter);
+app.use('/logs', logRouter);
 
 app.listen(port, () => {
   console.log(`App listening at ${reactAppHost}:${port}`);

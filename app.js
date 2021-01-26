@@ -10,13 +10,13 @@ require('dotenv').config();
 // routes
 const accountRouter = require('./routes/accounts/accounts');
 const eventRouter = require('./routes/events/events');
+const logRouter = require('./routes/events/logs');
 
 const app = express();
-
 const port = 3001;
 
 const reactAppHost = process.env.WMK_REACT_APP_HOST;
-const reactAppPort = process.env.WMK_REACT_APP_PORT
+const reactAppPort = process.env.WMK_REACT_APP_PORT;
 
 app.use(bodyParser.json());
 app.use(cookieParser());
@@ -27,12 +27,13 @@ app.use(
 );
 app.use(cors({
   credentials: true,
-  origin: `${reactAppHost}:${reactAppPort}`
+  origin: `${reactAppHost}:${reactAppPort}`,
 }));
 
 app.use('/accounts', [verifyToken, accountRouter]);
 app.use('/events', [verifyToken, eventRouter]);
 app.use('/auth', authRouter);
+app.use('/logs', logRouter);
 
 app.listen(port, () => {
   console.log(`App listening at ${reactAppHost}:${port}`);

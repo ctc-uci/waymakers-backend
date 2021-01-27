@@ -16,6 +16,7 @@ const warehouseRouter = require('./routes/inventory/warehouse');
 const eventRouter = require('./routes/events/events');
 const volunteerDataRouter = require('./routes/events/volunteerData');
 const logRouter = require('./routes/events/logs');
+const userEventRouter = require('./routes/events/userEvent');
 
 const app = express();
 const port = 3001;
@@ -42,6 +43,7 @@ app.use('/divisions', [verifyToken, divisionRouter]);
 app.use('/warehouses', [verifyToken, warehouseRouter]);
 app.use('/accounts', [verifyToken, accountRouter]);
 app.use('/events', [verifyToken, eventRouter]);
+app.use('/userEvent', [verifyToken, userEventRouter]);
 app.use('/auth', authRouter);
 app.use('/logs', logRouter);
 

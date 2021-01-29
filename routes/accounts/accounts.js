@@ -36,13 +36,14 @@ accountRouter.get('/:id', async (req, res) => {
 });
 
 // Create an account
-accountRouter.post('/', async (req, res) => {
-  console.log('got here');
+accountRouter.post('/:id', async (req, res) => {
   try {
     const {
       userID, firstName, lastName, birthDate, locationStreet, locationCity,
-      locationState, locationZip, tier, permission,
+      // eslint-disable-next-line no-unused-vars
+      locationState, locationZip, tier, permission, availability,
     } = req.body;
+
     const newAccount = await pool.query(`
       INSERT INTO users (userid, firstname, lastname, birthdate, locationstreet, locationcity,
       locationstate, locationzip, tier)
@@ -51,9 +52,20 @@ accountRouter.post('/', async (req, res) => {
     const newPermission = await pool.query(`
       INSERT INTO permissions (userid, permissions) 
       VALUES ('${userID}', '${permission}') RETURNING *`);
+    // const newAvailability = await pool.query(`
+    //   INSERT INTO availability (userid, dayofweek, starttime)
+    //   VALUES ('${userID}', '4', '2004-10-19 10:23:54') RETURNING *`);
+    //     const newAvailability = await pool.query(`
+    //       INSERT INTO availability (userid, dayofweek, starttime)
+    //       VALUES (${
+    //   availability.map((date) => ((`${userID}`, `${date.getDay()}`,
+    //   `${date.toLocaleString('en-US', { timeZone: 'America/Los_Angeles' })}`)))
+    // })`);
+
     res.send({
       newAccount: newAccount.rows[0],
       newPermission: newPermission.rows[0],
+      // newAvailability: newAvailability.rows,
     });
   } catch (err) {
     res.status(400).send(err.message);
@@ -66,7 +78,8 @@ accountRouter.put('/:id', async (req, res) => {
     const { id } = req.params;
     const {
       firstName, lastName, birthDate, locationStreet, locationCity,
-      locationState, locationZip, tier, permission,
+      // eslint-disable-next-line no-unused-vars
+      locationState, locationZip, tier, permission, availability,
     } = req.body;
 
     const userQuery = `
@@ -82,8 +95,19 @@ accountRouter.put('/:id', async (req, res) => {
                   WHERE userid = '${id}'
                 `;
     await pool.query(userQuery);
-
     if (permission) await pool.query(`UPDATE permissions SET permissions = '${permission}' WHERE userid = '${id}'`);
+    // if (availability) {
+    //   await pool.query(`
+    //   UPDATE availability
+    //   SET dayofweek = '4', starttime = '2004-10-19 10:23:54' WHERE userid = '${id}'`);
+    // }
+    // if (availability) {
+    //   await pool.query(`
+    //   UPDATE availability
+    //   SET ${availability.map((date) => ((`${id}`, `${date.getDay()}`,
+    //   `${date.toLocaleString('en-US', { timeZone: 'America/Los_Angeles' })}`)))}
+    //   WHERE userid = '${id}')`);
+    // }
 
     res.send(`Account with id ${id} was updated!`);
   } catch (err) {

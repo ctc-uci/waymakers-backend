@@ -41,10 +41,11 @@ userEventRouter.post('/add', async (req, res) => {
     const {
       userId, eventId,
     } = req.body;
-    // const checker = await pool.query(`SELECT * FROM user_event WHERE event_id = '${eventId}'`);
-    // if (checker.rowCount != 0) {
-    //   res.status(400).send(checker);
-    // }
+    const checker = await pool.query(`SELECT * FROM user_event WHERE event_id = '${eventId}'`);
+    if (checker.rowCount !== 0) {
+      res.status(400).send('Event already already in database');
+      return;
+    }
     let response = await pool.query(`INSERT INTO user_event 
                       (userid, event_id) 
                       VALUES ('${userId}', '${eventId}')

@@ -12,11 +12,15 @@ function convertEventSnakeToCamel(events) {
     startTime: event.start_time,
     endTime: event.end_time,
     division: event.division,
+    eventType: event.event_type,
+    eventLimit: event.event_limit,
     location: event.event_location,
     description: event.event_description,
     id: event.event_id,
   }));
 }
+
+// TODO: need to add event limits
 
 // Get all events
 eventRouter.get('/', async (req, res) => {
@@ -27,16 +31,6 @@ eventRouter.get('/', async (req, res) => {
   } catch (err) {
     console.error(err.message);
     res.status(500).send(err.message);
-  }
-});
-
-// Get top volunteers
-eventRouter.get('/', async (req, res) => {
-  try {
-    const allEvents = await pool.query('SELECT * FROM events');
-    res.send(allEvents.rows);
-  } catch (err) {
-    console.error(err.message);
   }
 });
 
@@ -62,11 +56,19 @@ eventRouter.post('/add', async (req, res) => {
   console.log(req.body);
   try {
     const {
-      eventName, eventLocation, eventDescription, startTime, endTime, isAllDay, division,
+      eventName, eventLocation, eventDescription, startTime, endTime, isAllDay, eventType, division,
     } = req.body;
     const response = await pool.query(`INSERT INTO events 
-                      (event_name, event_location, event_description, start_time, end_time, all_day, division) 
-                      VALUES ('${eventName}', '${eventLocation}', '${eventDescription}', '${startTime}', '${endTime}', '${isAllDay}', '${division}')
+                      (event_name, event_location, event_description, start_time, end_time, all_day, event_type, division) 
+                      VALUES (
+                        '${eventName}', 
+                        '${eventLocation}', 
+                        '${eventDescription}', 
+                        '${startTime}', 
+                        '${endTime}', 
+                        '${isAllDay}', 
+                        '${eventType}',
+                        '${division}')
                       RETURNING *`);
     if (response.rowCount === 0) {
       res.status(400).send(response);
@@ -84,9 +86,8 @@ eventRouter.put('/:id', async (req, res) => {
   console.log(req.body);
   try {
     const { id } = req.params;
-    console.log(req.params);
     const {
-      eventName, eventLocation, eventDescription, startTime, endTime, isAllDay, division,
+      eventName, eventLocation, eventDescription, startTime, endTime, isAllDay, eventType, division,
     } = req.body;
     const response = await pool.query(`UPDATE events 
                       SET event_name = '${eventName}', 
@@ -95,7 +96,8 @@ eventRouter.put('/:id', async (req, res) => {
                       start_time = '${startTime}', 
                       end_time = '${endTime}', 
                       all_day = '${isAllDay}',
-                      division = '${division}' 
+                      event_type = '${eventType}',
+                      division = '${division}'
                       WHERE event_id = ${id}
                       RETURNING *`);
     if (response.rowCount === 0) {

@@ -37,6 +37,7 @@ accountRouter.get('/:id', async (req, res) => {
 
 // Create an account
 accountRouter.post('/', async (req, res) => {
+  console.log('got here');
   try {
     const {
       userID, firstName, lastName, birthDate, locationStreet, locationCity,

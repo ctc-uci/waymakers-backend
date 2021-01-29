@@ -36,7 +36,7 @@ volunteerDataRouter.get('/all/', async (req, res) => {
   const { eventId } = req.query;
   try {
     const allEvents = await pool.query(`SELECT users.firstname, users.lastname, users.userid
-                                            FROM volunteer_event
+                                            FROM user_event
                                             INNER JOIN users ON
                                             volunteer_event.userid=users.userid
                                             WHERE volunteer_event.event_id=${eventId};`);

@@ -32,18 +32,21 @@ volunteerDataRouter.get('/top/', async (req, res) => {
 
 // Get all volunteers
 volunteerDataRouter.get('/all/', async (req, res) => {
-  const { event } = req.query;
+  const { event, tier } = req.query;
   try {
     const allEvents = await pool.query(`SELECT USERS.FIRSTNAME,
                                           USERS.LASTNAME,
                                           USERS.USERID,
+                                          USERS.TIER,
                                           SUM(TOTAL_HOURS)
                                         FROM USER_EVENT
                                         INNER JOIN USERS ON USER_EVENT.USERID = USERS.USERID
                                         INNER JOIN LOG_HOURS ON LOG_HOURS.EVENT_ID = USER_EVENT.EVENT_ID
                                         WHERE USER_EVENT.EVENT_ID = $1
+                                        AND
+                                        ${tier ? 'USERS.TIER=$2' : '$2=$2'}
                                         GROUP BY USERS.USERID`,
-    [event]);
+    [event, tier]);
     res.status(200).send(allEvents.rows);
   } catch (err) {
     console.error(err.message);

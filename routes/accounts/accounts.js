@@ -38,34 +38,78 @@ accountRouter.get('/:id', async (req, res) => {
 // Create an account
 accountRouter.post('/:id', async (req, res) => {
   try {
-    const {
-      userID, firstName, lastName, birthDate, locationStreet, locationCity,
-      // eslint-disable-next-line no-unused-vars
-      locationState, locationZip, tier, permission, availability,
-    } = req.body;
+    const { id } = req.params;
 
+    const {
+      firstName, lastName, birthDate, locationStreet, locationCity,
+      locationState, locationZip, tier,
+    } = req.body.account;
+
+    const {
+      permissions,
+    } = req.body.permissions;
+
+    const {
+      dayOfWeek, startTime,
+    } = req.body.availability;
+
+    // {
+    //   “account”: {
+    //       “userID”: “3K1HBRGdf2cMKvROFIhBF322gZy2”,
+    //       “firstName”: “Adam”,
+    //       “lastName”: “AdminLast”,
+    //       “birthdate”: “2021-01-24T08:00:00.000Z”,
+    //       “locationstreet”: “1 Test Street”,
+    //       “locationcity”: “Irvine”,
+    //       “locationstate”: “CA”,
+    //       “locationzip”: 92697,
+    //       “tier”: 1,
+    //       “division”: null
+    //   },
+    //   “permissions”: {
+    //       “userid”: “3K1HBRGdf2cMKvROFIhBF322gZy2”,
+    //       “permissions”: “Volunteer”
+    //   },
+    //   “availability”: {
+    //     "userID": "",
+    //     "dayOfWeek": "",
+    //     "startTime": "",
+    //   }
     const newAccount = await pool.query(`
       INSERT INTO users (userid, firstname, lastname, birthdate, locationstreet, locationcity,
       locationstate, locationzip, tier)
-      VALUES ('${userID}', '${firstName}', '${lastName}', '${birthDate}', '${locationStreet}',
+      VALUES ('${id}', '${firstName}', '${lastName}', '${birthDate}', '${locationStreet}',
       '${locationCity}', '${locationState}', '${locationZip}', '${tier}') RETURNING *`);
     const newPermission = await pool.query(`
       INSERT INTO permissions (userid, permissions) 
-      VALUES ('${userID}', '${permission}') RETURNING *`);
+      VALUES ('${id}', '${permissions}') RETURNING *`);
+    const newAvailability = await pool.query(`
+      INSERT INTO availability (userid, dayofweek, starttime)
+      VALUES ('${id}', '${dayOfWeek}', '${startTime}') RETURNING *`);
     // const newAvailability = await pool.query(`
     //   INSERT INTO availability (userid, dayofweek, starttime)
-    //   VALUES ('${userID}', '4', '2004-10-19 10:23:54') RETURNING *`);
-    //     const newAvailability = await pool.query(`
-    //       INSERT INTO availability (userid, dayofweek, starttime)
-    //       VALUES (${
+    //   VALUES (${
     //   availability.map((date) => ((`${userID}`, `${date.getDay()}`,
     //   `${date.toLocaleString('en-US', { timeZone: 'America/Los_Angeles' })}`)))
     // })`);
 
+    /*
+        {
+          ...
+          availability {
+            userid
+            dayofweek
+            availabilityTimes: {
+
+            }
+          }
+        }
+    */
+
     res.send({
       newAccount: newAccount.rows[0],
       newPermission: newPermission.rows[0],
-      // newAvailability: newAvailability.rows,
+      newAvailability: newAvailability.rows,
     });
   } catch (err) {
     res.status(400).send(err.message);
@@ -76,11 +120,19 @@ accountRouter.post('/:id', async (req, res) => {
 accountRouter.put('/:id', async (req, res) => {
   try {
     const { id } = req.params;
+
     const {
       firstName, lastName, birthDate, locationStreet, locationCity,
-      // eslint-disable-next-line no-unused-vars
-      locationState, locationZip, tier, permission, availability,
-    } = req.body;
+      locationState, locationZip, tier,
+    } = req.body.account;
+
+    const {
+      permissions,
+    } = req.body.permissions;
+
+    const {
+      dayOfWeek, startTime,
+    } = req.body.availability;
 
     const userQuery = `
                 UPDATE users
@@ -95,12 +147,14 @@ accountRouter.put('/:id', async (req, res) => {
                   WHERE userid = '${id}'
                 `;
     await pool.query(userQuery);
-    if (permission) await pool.query(`UPDATE permissions SET permissions = '${permission}' WHERE userid = '${id}'`);
-    // if (availability) {
-    //   await pool.query(`
-    //   UPDATE availability
-    //   SET dayofweek = '4', starttime = '2004-10-19 10:23:54' WHERE userid = '${id}'`);
-    // }
+    if (permissions) await pool.query(`UPDATE permissions SET permissions = '${permissions}' WHERE userid = '${id}'`);
+    if (dayOfWeek && startTime) {
+      await pool.query(`
+      UPDATE availability
+      SET dayofweek = '${dayOfWeek}',
+      starttime = '${startTime}'
+      WHERE userid = '${id}'`);
+    }
     // if (availability) {
     //   await pool.query(`
     //   UPDATE availability

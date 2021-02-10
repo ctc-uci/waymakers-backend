@@ -10,6 +10,7 @@ require('dotenv').config();
 // routes
 const inventoryRouter = require('./routes/inventory/inventory');
 const accountRouter = require('./routes/accounts/accounts');
+const qualificationRouter = require('./routes/accounts/qualifications');
 const categoryRouter = require('./routes/inventory/category');
 const divisionRouter = require('./routes/inventory/divisions');
 const warehouseRouter = require('./routes/inventory/warehouse');
@@ -39,6 +40,7 @@ app.use('/category', [verifyToken, categoryRouter]);
 app.use('/divisions', [verifyToken, divisionRouter]);
 app.use('/warehouses', [verifyToken, warehouseRouter]);
 app.use('/accounts', [verifyToken, accountRouter]);
+app.use('/qualifications', [verifyToken, qualificationRouter]);
 app.use('/events', [verifyToken, eventRouter]);
 app.use('/auth', authRouter);
 app.use('/logs', logRouter);

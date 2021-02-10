@@ -28,7 +28,7 @@ CREATE TABLE Availability
     FOREIGN KEY (userid) REFERENCES Users (userid) ON DELETE CASCADE
 );
 
-CREATE TABLE public.qualification_list
+CREATE TABLE qualification_list
 (
     id integer NOT NULL,
     volunteer_tier integer,
@@ -36,7 +36,7 @@ CREATE TABLE public.qualification_list
     CONSTRAINT qualification_list_pkey PRIMARY KEY (id)
 );
 
-CREATE TABLE public.qualification
+CREATE TABLE qualification
 (
     id integer NOT NULL,
     name character varying COLLATE pg_catalog."default" NOT NULL,
@@ -49,3 +49,20 @@ CREATE TABLE public.qualification
         ON DELETE CASCADE
 );
 
+CREATE TABLE qualification_status
+(
+    id integer NOT NULL,
+    user_id character(28) COLLATE pg_catalog."default" NOT NULL,
+    completion_status boolean,
+    completion_timestamp timestamp without time zone,
+    qualification_id integer,
+    CONSTRAINT qualification_status_pkey PRIMARY KEY (id),
+    CONSTRAINT qualification_id FOREIGN KEY (qualification_id)
+        REFERENCES public.qualification (id) MATCH SIMPLE
+        ON UPDATE CASCADE
+        ON DELETE CASCADE,
+    CONSTRAINT user_id FOREIGN KEY (user_id)
+        REFERENCES public.users (userid) MATCH SIMPLE
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+)

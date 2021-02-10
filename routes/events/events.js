@@ -12,11 +12,21 @@ function convertEventSnakeToCamel(events) {
     startTime: event.start_time,
     endTime: event.end_time,
     division: event.division,
+    eventType: event.event_type,
+    eventLimit: event.event_limit,
     location: event.event_location,
     description: event.event_description,
     id: event.event_id,
+    st: event.st,
+    et: event.et,
+    startMonth: event.start_month,
+    startDay: event.start_day,
+    endMonth: event.end_month,
+    endDay: event.end_day,
   }));
 }
+
+// TODO: need to add event limits
 
 // Get all events
 eventRouter.get('/', async (req, res) => {
@@ -34,8 +44,18 @@ eventRouter.get('/', async (req, res) => {
 eventRouter.get('/:id', async (req, res) => {
   const { id } = req.params;
   try {
-    let event = await pool.query(`SELECT * FROM events WHERE event_id = ${id}`);
+    let event = await pool.query(`SELECT *, 
+                                    (events.start_time at time zone 'america/los_angeles' at time zone 'utc')::time as st,
+                                    (events.end_time at time zone 'america/los_angeles' at time zone 'utc')::time as et,
+                                    date_part('month', events.start_time at time zone 'america/los_angeles' at time zone 'utc') as start_month,
+                                    date_part('day', events.start_time at time zone 'america/los_angeles' at time zone 'utc') as start_day,
+                                    date_part('month', events.end_time at time zone 'america/los_angeles' at time zone 'utc') as end_month,
+                                    date_part('day', events.end_time at time zone 'america/los_angeles' at time zone 'utc') as end_day
+                                  FROM events WHERE event_id = $1`,
+    [id]);
+    console.log(event.rows);
     event = convertEventSnakeToCamel(event.rows);
+    console.log(event);
     if (event.length === 0) {
       res.status(400).send(event);
     } else {
@@ -52,16 +72,25 @@ eventRouter.post('/add', async (req, res) => {
   console.log(req.body);
   try {
     const {
-      eventName, eventLocation, eventDescription, startTime, endTime, isAllDay, division,
+      eventName, eventLocation, eventDescription, startTime, endTime, isAllDay, eventType, division,
     } = req.body;
     const response = await pool.query(`INSERT INTO events 
-                      (event_name, event_location, event_description, start_time, end_time, all_day, division) 
-                      VALUES ('${eventName}', '${eventLocation}', '${eventDescription}', '${startTime}', '${endTime}', '${isAllDay}', '${division}')
+                      (event_name, event_location, event_description, start_time, end_time, all_day, event_type, division) 
+                      VALUES (
+                        '${eventName}', 
+                        '${eventLocation}', 
+                        '${eventDescription}', 
+                        '${startTime}', 
+                        '${endTime}', 
+                        '${isAllDay}', 
+                        '${eventType}',
+                        '${division}')
                       RETURNING *`);
     if (response.rowCount === 0) {
       res.status(400).send(response);
     } else {
-      res.status(200).send(response);
+      const event = convertEventSnakeToCamel(response.rows);
+      res.status(200).send(event);
     }
   } catch (err) {
     console.error(err.message);
@@ -74,9 +103,8 @@ eventRouter.put('/:id', async (req, res) => {
   console.log(req.body);
   try {
     const { id } = req.params;
-    console.log(req.params);
     const {
-      eventName, eventLocation, eventDescription, startTime, endTime, isAllDay, division,
+      eventName, eventLocation, eventDescription, startTime, endTime, isAllDay, eventType, division,
     } = req.body;
     const response = await pool.query(`UPDATE events 
                       SET event_name = '${eventName}', 
@@ -85,13 +113,15 @@ eventRouter.put('/:id', async (req, res) => {
                       start_time = '${startTime}', 
                       end_time = '${endTime}', 
                       all_day = '${isAllDay}',
-                      division = '${division}' 
+                      event_type = '${eventType}',
+                      division = '${division}'
                       WHERE event_id = ${id}
                       RETURNING *`);
     if (response.rowCount === 0) {
       res.status(400).send();
     } else {
-      res.status(200).send(response);
+      const event = convertEventSnakeToCamel(response.rows);
+      res.status(200).send(event);
     }
   } catch (err) {
     console.error(err.message);

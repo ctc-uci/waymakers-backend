@@ -11,6 +11,8 @@ function convertLogSnakeToCamel(logs) {
     logId: log.log_id,
     userId: log.userid,
     eventId: log.event_id,
+    title: log.event_name,
+    location: log.event_location,
     logStart: log.log_start,
     logEnd: log.log_end,
     totalHours: log.total_hours,
@@ -21,12 +23,12 @@ function convertLogSnakeToCamel(logs) {
 // Get all logs
 logRouter.get('/', async (req, res) => {
   try {
-    const logs = await pool.query(`SELECT log_hours.*, events.* 
+    let logs = await pool.query(`SELECT log_hours.*, events.* 
                                 FROM log_hours
                                 INNER JOIN events 
                                 ON log_hours.event_id = events.event_id;`);
-    // logs = convertLogSnakeToCamel(logs.rows);
-    res.status(200).send(logs.rows);
+    logs = convertLogSnakeToCamel(logs.rows);
+    res.status(200).send(logs);
   } catch (err) {
     console.error(err.message);
     res.status(500).send(err.message);
@@ -55,18 +57,17 @@ logRouter.post('/add', async (req, res) => {
   }
 });
 
-// Get log for user id
+// Get all logs
 logRouter.get('/:id', async (req, res) => {
   const { id } = req.params;
-  console.log(id);
   try {
-    let userLogs = await pool.query(`SELECT * FROM log_hours WHERE userid='${id}'`);
-    userLogs = convertLogSnakeToCamel(userLogs.rows);
-    if (userLogs.length === 0) {
-      res.status(400).send(userLogs);
-    } else {
-      res.status(200).send(userLogs);
-    }
+    let logs = await pool.query(`SELECT log_hours.*, events.* 
+                                FROM log_hours
+                                INNER JOIN events 
+                                ON log_hours.event_id = events.event_id
+                                WHERE log_hours.userid = '${id}'`);
+    logs = convertLogSnakeToCamel(logs.rows);
+    res.status(200).send(logs);
   } catch (err) {
     console.error(err.message);
     res.status(500).send(err.message);

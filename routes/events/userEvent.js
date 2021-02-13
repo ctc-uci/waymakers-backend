@@ -13,6 +13,7 @@ function convertEventsSnakeToCamel(userEvents) {
     endTime: userEvent.end_time,
     division: userEvent.division,
     eventLimit: userEvent.event_limit,
+    eventAttendance: userEvent.event_attendance,
     location: userEvent.event_location,
     description: userEvent.event_description,
     id: userEvent.event_id,
@@ -35,22 +36,6 @@ userEventRouter.get('/:id', async (req, res) => {
     res.status(500).send(err.message);
   }
 });
-
-// Get number of people signed up for an event
-userEventRouter.get('/attendance/:id', async (req, res) => {
-  const { id } = req.params;
-  try {
-    const attendance = await pool.query(`SELECT event_id, COUNT(userid) as attendance
-                                          FROM user_event
-                                          WHERE event_id = ${id}
-                                          GROUP BY event_id`);
-    console.log(attendance);
-    res.status(200).send(attendance.rows);
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).send(err.message);
-  }
-})
 
 // Add event to user's calendar
 userEventRouter.post('/add', async (req, res) => {

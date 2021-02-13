@@ -16,6 +16,7 @@ function convertEventSnakeToCamel(events) {
     eventLimit: event.event_limit,
     location: event.event_location,
     description: event.event_description,
+    eventLimit: event.event_limit,
     id: event.event_id,
     st: event.st,
     et: event.et,

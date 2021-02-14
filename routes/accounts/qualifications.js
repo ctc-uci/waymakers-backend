@@ -30,6 +30,25 @@ qualificationsRouter.get('/:id', async (req, res) => {
   }
 });
 
+// Get qualification list for a user, by their id
+qualificationsRouter.get('/user/:user_id', async (req, res) => {
+  const { user_id } = req.params;
+  console.log(`Getting qualification_list with userid: ${user_id}`);
+  try {
+    // Get users tier from users table
+    const volunteer_query = await pool.query('SELECT tier FROM users WHERE userid = $1', [user_id]);
+    const volunteer_tier = volunteer_query.rows[0].tier;
+
+    // Fetch qualification list with matching volunteerTier
+    const qualification = await pool.query('SELECT * FROM qualification_list WHERE volunteer_tier = $1', [volunteer_tier]);
+    res.send({
+      qualification: qualification.rows,
+    });
+  } catch (err) {
+    res.status(400).send(err.message);
+  }
+});
+
 // Create qualification list
 qualificationsRouter.post('/', async (req, res) => {
   try {

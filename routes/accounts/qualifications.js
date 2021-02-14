@@ -6,10 +6,20 @@ const pool = require('../../postgres/config');
 
 qualificationsRouter.use(express.json());
 
+// Get all qualification lists
+qualificationsRouter.get('/', async (req, res) => {
+  try {
+    const allQualificationLists = await pool.query('SELECT * FROM qualification_list');
+    res.send(allQualificationLists.rows);
+  } catch (err) {
+    res.status(400).send(err.message);
+  }
+});
+
 // Get qualification list by id
 qualificationsRouter.get('/:id', async (req, res) => {
   const { id } = req.params;
-  console.log(id);
+  console.log(`Getting id: ${id}`);
   try {
     const qualification = await pool.query('SELECT * FROM qualification_list WHERE id = $1', [id]);
     res.send({
@@ -63,8 +73,6 @@ try {
 }
 });
 
-module.exports = qualificationsRouter;
-
 // Edit qualification 
 qualificationsRouter.put('/qualification', async(req, res) => {
   try {
@@ -85,3 +93,5 @@ UPDATE qualification
     res.status(400).send(`Qualification with id ${id} does not exist`);
   }
 })
+
+module.exports = qualificationsRouter;

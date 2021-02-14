@@ -19,7 +19,7 @@ qualificationsRouter.get('/', async (req, res) => {
 // Get qualification list by id
 qualificationsRouter.get('/:id', async (req, res) => {
   const { id } = req.params;
-  console.log(`Getting id: ${id}`);
+  console.log(`Getting qualification_list with id: ${id}`);
   try {
     const qualification = await pool.query('SELECT * FROM qualification_list WHERE id = $1', [id]);
     res.send({
@@ -44,6 +44,25 @@ qualificationsRouter.post('/', async (req, res) => {
     res.send({
       volunteerTier: newQualificationList.rows,
     });
+  } catch (err) {
+    res.status(400).send(err.message);
+  }
+});
+
+// Edit qualification list by id
+qualificationsRouter.put('/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { volunteerTier } = req.body;
+    console.log(`Editing qualification_list with id: ${id}`);
+    if (id == null) res.status(400).send("Can't edit qualification_list without ID");
+    await pool.query(`
+      UPDATE qualification_list
+      SET volunteer_tier = $1
+      WHERE id = $2
+    `, 
+    [volunteerTier, id]);
+    res.send(`Qualification with id ${id} was edited!`);
   } catch (err) {
     res.status(400).send(err.message);
   }

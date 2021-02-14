@@ -55,12 +55,12 @@ qualificationsRouter.delete('/', async (req, res) => {
 qualificationsRouter.post('/qualification', async (req, res) => {
   try {
     const {
-      name, question, qualificationsListId,
+      name, question, qualificationlistid,
     } = req.body;
     const qualification = await pool.query(`
-        INSERT INTO qualification(name, question, qualificationsListId) VALUES
+        INSERT INTO qualification(name, question, qualificationlistid) VALUES
         ($1, $2, $3) RETURNING *`,
-    [name, question, qualificationsListId]);
+    [name, question, qualificationlistid]);
     res.send(
       qualification.rows,
     );

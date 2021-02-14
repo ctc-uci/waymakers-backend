@@ -10,6 +10,7 @@ require('dotenv').config();
 // routes
 const inventoryRouter = require('./routes/inventory/inventory');
 const accountRouter = require('./routes/accounts/accounts');
+const availabilityRouter = require('./routes/availability/availability');
 const categoryRouter = require('./routes/inventory/category');
 const divisionRouter = require('./routes/inventory/divisions');
 const warehouseRouter = require('./routes/inventory/warehouse');
@@ -37,6 +38,7 @@ app.use(cors({
 }));
 
 app.use('/volunteerData', volunteerDataRouter);
+app.use('/availability', [verifyToken, availabilityRouter]);
 app.use('/inventory', [verifyToken, inventoryRouter]);
 app.use('/category', [verifyToken, categoryRouter]);
 app.use('/divisions', [verifyToken, divisionRouter]);

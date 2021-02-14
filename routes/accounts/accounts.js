@@ -24,11 +24,9 @@ accountRouter.get('/:id', async (req, res) => {
   try {
     const account = await pool.query(`SELECT * FROM users WHERE userid = '${id}'`);
     const permission = await pool.query(`SELECT * FROM permissions WHERE userid = '${id}'`);
-    const availability = await pool.query(`SELECT * FROM availability WHERE userid = '${id}'`);
     res.send({
       account: account.rows[0],
       permissions: permission.rows[0],
-      availability: availability.rows,
     });
   } catch (err) {
     res.status(400).send(err.message);

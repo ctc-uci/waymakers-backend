@@ -46,6 +46,7 @@ qualificationsRouter.get('/user/:user_id', async (req, res) => {
 });
 
 // Create qualification list
+// TODO: Only allow 1 qualification list per volunteer tier
 qualificationsRouter.post('/', async (req, res) => {
   try {
     const {
@@ -145,5 +146,32 @@ UPDATE qualification
     res.status(400).send(err.message);
   }
 })
+
+// Update qualification status
+// TODO: Use sql triggers to populate/update qualification status table with each users qualifications
+qualificationsRouter.put('/status', async (req, res) => {
+  try {
+    const {
+      user_id, qualification_id, completion_status
+    } = req.body;
+    console.log(`Setting qualification_status of user: ${user_id} with qualification_id: ${qualification_id} to: ${completion_status}`);
+    if (user_id == null) res.status(400).send("Can't update qualification_status without user_id");
+    else if (qualification_id == null) res.status(400).send("Can't update qualification_status without qualification_id");
+    else if (completion_status == null) res.status(400).send("Can't update qualification_status without completion_status");
+    await pool.query(`
+      UPDATE qualification_status
+      SET
+        completion_status = $1
+        completion_timestamp = SELECT NOW()::timestamp
+      WHERE
+        user_id = $2 AND
+        qualification_id = $3
+    `, 
+    [completion_status, user_id, qualification_id]);
+    res.send(`Qualification_status of user ${user_id} with qualification_id ${qualification_id} was updated`);
+  } catch (err) {
+    res.status(400).send(err.message);
+  }
+});
 
 module.exports = qualificationsRouter;

@@ -51,24 +51,42 @@ qualificationsRouter.delete('/', async (req, res) => {
   }
 });
 
-// delete qualification
-qualificationsRouter.delete('/qualification', async(req, res) => {
-try {
-  const { id } = req.body;
-  if (id == null) res.status(400).send("Can't delete qualification_list without ID");
-  await pool.query('DELETE FROM qualification WHERE id = $1 RETURNING *', [id]);
-  res.send(`Qualification with id ${id} was deleted!`);
-} catch (err) {
-  res.status(400).send(err.message);
-}
+// Create Qualification
+qualificationsRouter.post('/qualification', async (req, res) => {
+  try {
+    const {
+      name, question, qualificationsListId,
+    } = req.body;
+    const qualification = await pool.query(`
+        INSERT INTO qualification(name, question, qualificationsListId) VALUES
+        ($1, $2, $3) RETURNING *`,
+    [name, question, qualificationsListId]);
+    res.send(
+      qualification.rows,
+    );
+  } catch (err) {
+    res.status(400).send(err.message);
+  }
+});
+
+// Delete qualification
+qualificationsRouter.delete('/qualification', async (req, res) => {
+  try {
+    const { id } = req.body;
+    if (id == null) res.status(400).send("Can't delete qualification_list without ID");
+    await pool.query('DELETE FROM qualification WHERE id = $1 RETURNING *', [id]);
+    res.send(`Qualification with id ${id} was deleted!`);
+  } catch (err) {
+    res.status(400).send(err.message);
+  }
 });
 
 module.exports = qualificationsRouter;
 
-// Edit qualification 
-qualificationsRouter.put('/qualification', async(req, res) => {
+// Edit qualification
+qualificationsRouter.put('/qualification', async (req, res) => {
   try {
-    const {id, name, question} = req.body;
+    const { id, name, question } = req.body;
     console.log(id);
     console.log(name);
     console.log(question);
@@ -79,9 +97,9 @@ UPDATE qualification
       ${question ? `question = '${question}' ` : ''}
   WHERE id = ${id}
     `;
-  await pool.query(userQuery);
-  res.send(`Account with id ${id} was updated!`);
+    await pool.query(userQuery);
+    res.send(`Account with id ${id} was updated!`);
   } catch (err) {
-    res.status(400).send(`Qualification with id ${id} does not exist`);
+    res.status(400).send(err.message);
   }
-})
+});

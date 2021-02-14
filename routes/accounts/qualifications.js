@@ -22,9 +22,7 @@ qualificationsRouter.get('/:id', async (req, res) => {
   console.log(`Getting qualification_list with id: ${id}`);
   try {
     const qualification = await pool.query('SELECT * FROM qualification_list WHERE id = $1', [id]);
-    res.send({
-      qualification: qualification.rows,
-    });
+    res.send(qualification.rows);
   } catch (err) {
     res.status(400).send(err.message);
   }
@@ -41,9 +39,7 @@ qualificationsRouter.get('/user/:user_id', async (req, res) => {
 
     // Fetch qualification list with matching volunteerTier
     const qualification = await pool.query('SELECT * FROM qualification_list WHERE volunteer_tier = $1', [volunteer_tier]);
-    res.send({
-      qualification: qualification.rows,
-    });
+    res.send(qualification.rows);
   } catch (err) {
     res.status(400).send(err.message);
   }

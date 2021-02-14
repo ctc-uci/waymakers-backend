@@ -7,8 +7,8 @@ const pool = require('../../postgres/config');
 qualificationsRouter.use(express.json());
 
 // Get qualification list by id
-qualificationsRouter.get('/', async (req, res) => {
-  const { id } = req.body;
+qualificationsRouter.get('/:id', async (req, res) => {
+  const { id } = req.params;
   console.log(id);
   try {
     const qualification = await pool.query('SELECT * FROM qualification_list WHERE id = $1', [id]);
@@ -39,10 +39,10 @@ qualificationsRouter.post('/', async (req, res) => {
   }
 });
 
-// Delete qualification list
-qualificationsRouter.delete('/', async (req, res) => {
+// Delete qualification list by id
+qualificationsRouter.delete('/:id', async (req, res) => {
   try {
-    const { id } = req.body;
+    const { id } = req.params;
     if (id == null) res.status(400).send("Can't delete qualification_list without ID");
     await pool.query('DELETE FROM qualification_list WHERE id = $1 RETURNING *', [id]);
     res.send(`Qualification with id ${id} was deleted!`);

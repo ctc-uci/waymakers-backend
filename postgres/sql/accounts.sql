@@ -56,6 +56,7 @@ CREATE TABLE qualification_status
     completion_status boolean,
     completion_timestamp timestamp without time zone,
     qualification_id integer,
+    notes character varying(100)[] COLLATE pg_catalog."default",
     CONSTRAINT qualification_status_pkey PRIMARY KEY (id),
     CONSTRAINT qualification_id FOREIGN KEY (qualification_id)
         REFERENCES public.qualification (id) MATCH SIMPLE

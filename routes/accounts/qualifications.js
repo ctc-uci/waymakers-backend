@@ -28,18 +28,30 @@ qualificationsRouter.get('/:id', async (req, res) => {
   }
 });
 
-// Get qualification list for a user, by their id
+// Get qualification list for a user, by their id TODO: CHANGE TO USE qualification_status TABLE ONCE TRIGGERS ARE SETUP
 qualificationsRouter.get('/user/:user_id', async (req, res) => {
   const { user_id } = req.params;
   console.log(`Getting qualification_list with userid: ${user_id}`);
   try {
-    // Get users tier from users table
-    const volunteer_query = await pool.query('SELECT tier FROM users WHERE userid = $1', [user_id]);
-    const volunteer_tier = volunteer_query.rows[0].tier;
+    // Join query with qualification and qualification_status tables
+    const userQualificationQuery = await pool.query(`
+        SELECT
+          qualification.id,
+          qualification.name,
+          qualification.question,
+          qualification.qualificationlistid,
+          qualification_status.user_id,
+          qualification_status.completion_status,
+          qualification_status.completion_timestamp,
+          qualification_status.notes
+        FROM
+          qualification_status
+        INNER JOIN qualification ON qualification_status.qualification_id = qualification.id
+        WHERE
+          qualification_status.user_id = $1;
+    `, [user_id]);
 
-    // Fetch qualification list with matching volunteerTier
-    const qualification = await pool.query('SELECT * FROM qualification_list WHERE volunteer_tier = $1', [volunteer_tier]);
-    res.send(qualification.rows);
+    res.send(userQualificationQuery.rows);
   } catch (err) {
     res.status(400).send(err.message);
   }

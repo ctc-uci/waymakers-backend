@@ -14,9 +14,16 @@ function convertEventsSnakeToCamel(userEvents) {
     division: userEvent.division,
     eventLimit: userEvent.event_limit,
     eventAttendance: userEvent.event_attendance,
+    eventType: userEvent.event_type,
     location: userEvent.event_location,
     description: userEvent.event_description,
     id: userEvent.event_id,
+    st: userEvent.st,
+    et: userEvent.et,
+    startMonth: userEvent.start_month,
+    startDay: userEvent.start_day,
+    endMonth: userEvent.end_month,
+    endDay: userEvent.end_day,
   }));
 }
 

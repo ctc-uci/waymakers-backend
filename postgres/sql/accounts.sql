@@ -68,3 +68,20 @@ CREATE TABLE qualification_status
         ON UPDATE CASCADE
         ON DELETE CASCADE
 )
+
+-- Fucntion to add new qualification to all users in Qualification Status table
+CREATE FUNCTION add_qualifications()
+    RETURNS TRIGGER
+    LANGUAGE PLPGSQL
+AS $add_qualification_to_Users$
+BEGIN
+ -- trigger logic --
+END:
+$add_qualification_to_Users$
+
+-- trigger to add new qualifications to all users 
+CREATE TRIGGER add_qualification_to_Users
+AFTER INSERT
+ON qualification
+FOR EACH ROW 
+EXECUTE PROCEDURE add_qualifications();

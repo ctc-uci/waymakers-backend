@@ -35,7 +35,8 @@ qualificationsRouter.get('/user/:user_id', async (req, res) => {
   }
 });
 
-qualificationsRouter.post('/qualification', async (req, res) => {
+// Create qualification
+qualificationsRouter.post('/', async (req, res) => {
   try {
     const {
       name, description,
@@ -53,7 +54,7 @@ qualificationsRouter.post('/qualification', async (req, res) => {
 });
 
 // Delete qualification
-qualificationsRouter.delete('/qualification', async (req, res) => {
+qualificationsRouter.delete('/', async (req, res) => {
   try {
     const { id } = req.body;
     if (id == null) res.status(400).send("Can't delete qualification_list without ID");
@@ -65,7 +66,7 @@ qualificationsRouter.delete('/qualification', async (req, res) => {
 });
 
 // Edit qualification 
-qualificationsRouter.put('/qualification', async(req, res) => {
+qualificationsRouter.put('/', async(req, res) => {
   try {
     const { id, name, description } = req.body;
     console.log(id);

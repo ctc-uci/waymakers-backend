@@ -72,13 +72,15 @@ qualificationsRouter.put('/qualification', async(req, res) => {
     console.log(name);
     console.log(description);
     if (id == null) res.status(400).send("Can't edit qualification without ID");
-    const userQuery = `
+    await pool.query(`
       UPDATE qualification
-        SET ${name ? `qualification_name = '${name}', ` : ''}
-            ${description ? `qualification_description = '${description}' ` : ''}
-        WHERE id = ${id}
-    `;
-    await pool.query(userQuery);
+      SET
+        qualification_name = $2
+        qualification_description = $3
+      WHERE
+        id = $1
+    `,
+    [id, name, description]);
     res.send(`Account with id ${id} was updated!`);
   } catch (err) {
     res.status(400).send(err.message);

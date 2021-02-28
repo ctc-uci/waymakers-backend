@@ -6,28 +6,6 @@ const pool = require('../../postgres/config');
 
 qualificationsRouter.use(express.json());
 
-// Get all qualification lists
-qualificationsRouter.get('/', async (req, res) => {
-  try {
-    const allQualificationLists = await pool.query('SELECT * FROM qualification_list');
-    res.send(allQualificationLists.rows);
-  } catch (err) {
-    res.status(400).send(err.message);
-  }
-});
-
-// Get qualification list by id
-qualificationsRouter.get('/:id', async (req, res) => {
-  const { id } = req.params;
-  console.log(`Getting qualification_list with id: ${id}`);
-  try {
-    const qualification = await pool.query('SELECT * FROM qualification_list WHERE id = $1', [id]);
-    res.send(qualification.rows);
-  } catch (err) {
-    res.status(400).send(err.message);
-  }
-});
-
 // Get qualification list for a user, by their id TODO: CHANGE TO USE qualification_status TABLE ONCE TRIGGERS ARE SETUP
 qualificationsRouter.get('/user/:user_id', async (req, res) => {
   const { user_id } = req.params;
@@ -57,58 +35,6 @@ qualificationsRouter.get('/user/:user_id', async (req, res) => {
   }
 });
 
-// Create qualification list
-// TODO: Only allow 1 qualification list per volunteer tier
-qualificationsRouter.post('/', async (req, res) => {
-  try {
-    const {
-      volunteerTier,
-    } = req.body;
-    const newQualificationList = await pool.query(`
-        INSERT INTO qualification_list(volunteer_tier, create_timestamp) VALUES
-        ($1,
-        (SELECT NOW()::timestamp)) RETURNING *`,
-    [volunteerTier]);
-    res.send({
-      volunteerTier: newQualificationList.rows,
-    });
-  } catch (err) {
-    res.status(400).send(err.message);
-  }
-});
-
-// Edit qualification list by id
-qualificationsRouter.put('/:id', async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { volunteerTier } = req.body;
-    console.log(`Editing qualification_list with id: ${id}`);
-    if (id == null) res.status(400).send("Can't edit qualification_list without ID");
-    await pool.query(`
-      UPDATE qualification_list
-      SET volunteer_tier = $1
-      WHERE id = $2
-    `, 
-    [volunteerTier, id]);
-    res.send(`Qualification with id ${id} was edited!`);
-  } catch (err) {
-    res.status(400).send(err.message);
-  }
-});
-
-// Delete qualification list by id
-qualificationsRouter.delete('/:id', async (req, res) => {
-  try {
-    const { id } = req.params;
-    if (id == null) res.status(400).send("Can't delete qualification_list without ID");
-    await pool.query('DELETE FROM qualification_list WHERE id = $1 RETURNING *', [id]);
-    res.send(`Qualification with id ${id} was deleted!`);
-  } catch (err) {
-    res.status(400).send(err.message);
-  }
-});
-
-// Create Qualification
 qualificationsRouter.post('/qualification', async (req, res) => {
   try {
     const {

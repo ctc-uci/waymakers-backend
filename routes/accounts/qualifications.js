@@ -6,7 +6,7 @@ const pool = require('../../postgres/config');
 
 qualificationsRouter.use(express.json());
 
-// Get qualification list for a user, by their id TODO: CHANGE TO USE qualification_status TABLE ONCE TRIGGERS ARE SETUP
+// Get all qualifications and their statues for a user, by the user's id
 qualificationsRouter.get('/user/:user_id', async (req, res) => {
   const { user_id } = req.params;
   console.log(`Getting qualification_list with userid: ${user_id}`);
@@ -15,9 +15,9 @@ qualificationsRouter.get('/user/:user_id', async (req, res) => {
     const userQualificationQuery = await pool.query(`
         SELECT
           qualification.id,
-          qualification.name,
-          qualification.question,
-          qualification.qualificationlistid,
+          qualification.qualification_name,
+          qualification.qualification_description,
+          qualification.volunteer_tier,
           qualification_status.user_id,
           qualification_status.completion_status,
           qualification_status.completion_timestamp,
@@ -38,12 +38,12 @@ qualificationsRouter.get('/user/:user_id', async (req, res) => {
 qualificationsRouter.post('/qualification', async (req, res) => {
   try {
     const {
-      name, question, qualificationlistid,
+      name, description,
     } = req.body;
     const qualification = await pool.query(`
-        INSERT INTO qualification(name, question, qualificationlistid) VALUES
+        INSERT INTO qualification(qualification_name, qualification_description) VALUES
         ($1, $2, $3) RETURNING *`,
-    [name, question, qualificationlistid]);
+    [name, description]);
     res.send(
       qualification.rows,
     );
@@ -67,16 +67,16 @@ qualificationsRouter.delete('/qualification', async (req, res) => {
 // Edit qualification 
 qualificationsRouter.put('/qualification', async(req, res) => {
   try {
-    const { id, name, question } = req.body;
+    const { id, name, description } = req.body;
     console.log(id);
     console.log(name);
-    console.log(question);
+    console.log(description);
     if (id == null) res.status(400).send("Can't edit qualification without ID");
     const userQuery = `
-UPDATE qualification
-  SET ${name ? `name = '${name}', ` : ''}
-      ${question ? `question = '${question}' ` : ''}
-  WHERE id = ${id}
+      UPDATE qualification
+        SET ${name ? `qualification_name = '${name}', ` : ''}
+            ${description ? `qualification_description = '${description}' ` : ''}
+        WHERE id = ${id}
     `;
     await pool.query(userQuery);
     res.send(`Account with id ${id} was updated!`);
@@ -86,7 +86,6 @@ UPDATE qualification
 })
 
 // Update qualification status
-// TODO: Use sql triggers to populate/update qualification status table with each users qualifications
 qualificationsRouter.put('/status', async (req, res) => {
   try {
     const {

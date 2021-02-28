@@ -39,7 +39,11 @@ qualificationsRouter.get('/user/:user_id', async (req, res) => {
 qualificationsRouter.get('/', async (req, res) => {
   try {
     const qualifications = await pool.query(`
-        SELECT * FROM qualification`);
+        SELECT * FROM qualification
+        ORDER BY
+	        volunteer_tier ASC,
+	        id ASC
+    `);
     res.send(qualifications.rows);
   } catch (err) {
     res.status(400).send(err.message);

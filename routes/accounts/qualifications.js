@@ -9,7 +9,7 @@ qualificationsRouter.use(express.json());
 // Get all qualifications and their statues for a user, by the user's id
 qualificationsRouter.get('/user/:user_id', async (req, res) => {
   const { user_id } = req.params;
-  console.log(`Getting qualification_list with userid: ${user_id}`);
+  console.log(`Getting qualification statues for userid: ${user_id}`);
   try {
     // Join query with qualification and qualification_status tables
     const userQualificationQuery = await pool.query(`
@@ -57,7 +57,7 @@ qualificationsRouter.post('/', async (req, res) => {
 qualificationsRouter.delete('/', async (req, res) => {
   try {
     const { id } = req.body;
-    if (id == null) res.status(400).send("Can't delete qualification_list without ID");
+    if (id == null) res.status(400).send("Can't delete qualification without ID");
     await pool.query('DELETE FROM qualification WHERE id = $1 RETURNING *', [id]);
     res.send(`Qualification with id ${id} was deleted!`);
   } catch (err) {
@@ -65,7 +65,8 @@ qualificationsRouter.delete('/', async (req, res) => {
   }
 });
 
-// Edit qualification 
+// Edit qualification
+// TODO: Add trigger to update qualification_status table when volunteer_tier changes
 qualificationsRouter.put('/', async(req, res) => {
   try {
     const { id, name, description } = req.body;
@@ -76,7 +77,7 @@ qualificationsRouter.put('/', async(req, res) => {
     await pool.query(`
       UPDATE qualification
       SET
-        qualification_name = $2
+        qualification_name = $2,
         qualification_description = $3
       WHERE
         id = $1

@@ -73,20 +73,41 @@ eventRouter.post('/add', async (req, res) => {
   console.log(req.body);
   try {
     const {
-      eventName, eventLocation, eventDescription, startTime, endTime, isAllDay, eventType, division,
+      eventName,
+      eventLocation,
+      eventDescription,
+      startTime,
+      endTime,
+      isAllDay,
+      eventType,
+      division,
+      eventLimit,
     } = req.body;
     const response = await pool.query(`INSERT INTO events 
-                      (event_name, event_location, event_description, start_time, end_time, all_day, event_type, division) 
+                      (event_name, event_location, event_description, start_time, end_time, all_day, event_type, division, event_limit, event_attendance) 
                       VALUES (
-                        '${eventName}', 
-                        '${eventLocation}', 
-                        '${eventDescription}', 
-                        '${startTime}', 
-                        '${endTime}', 
-                        '${isAllDay}', 
-                        '${eventType}',
-                        '${division}')
-                      RETURNING *`);
+                         $1, 
+                         $2, 
+                         $3, 
+                         $4, 
+                         $5, 
+                         $6, 
+                         $7,
+                         $8,
+                         $9,
+                         0)
+                      RETURNING *`,
+    [
+      eventName,
+      eventLocation,
+      eventDescription,
+      startTime,
+      endTime,
+      isAllDay,
+      eventType,
+      division,
+      eventLimit,
+    ]);
     if (response.rowCount === 0) {
       res.status(400).send(response);
     } else {

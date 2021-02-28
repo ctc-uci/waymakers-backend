@@ -39,12 +39,12 @@ qualificationsRouter.get('/user/:user_id', async (req, res) => {
 qualificationsRouter.post('/', async (req, res) => {
   try {
     const {
-      name, description,
+      name, description, volunteer_tier
     } = req.body;
     const qualification = await pool.query(`
-        INSERT INTO qualification(qualification_name, qualification_description) VALUES
+        INSERT INTO qualification(qualification_name, qualification_description, volunteer_tier) VALUES
         ($1, $2, $3) RETURNING *`,
-    [name, description]);
+    [name, description, volunteer_tier]);
     res.send(
       qualification.rows,
     );

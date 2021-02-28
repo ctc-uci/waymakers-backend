@@ -126,7 +126,7 @@ eventRouter.put('/:id', async (req, res) => {
   try {
     const { id } = req.params;
     const {
-      eventName, eventLocation, eventDescription, startTime, endTime, isAllDay, eventType, division,
+      eventName, eventLocation, eventDescription, startTime, endTime, isAllDay, eventType, division, eventLimit
     } = req.body;
     const response = await pool.query(`UPDATE events 
                       SET event_name = '${eventName}', 
@@ -136,7 +136,8 @@ eventRouter.put('/:id', async (req, res) => {
                       end_time = '${endTime}', 
                       all_day = '${isAllDay}',
                       event_type = '${eventType}',
-                      division = '${division}'
+                      division = '${division}',
+                      event_limit = '${eventLimit}'
                       WHERE event_id = ${id}
                       RETURNING *`);
     if (response.rowCount === 0) {

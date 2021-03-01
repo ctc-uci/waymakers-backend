@@ -76,10 +76,20 @@ userEventRouter.post('/add', async (req, res) => {
 });
 
 // Remove user event by event ID
-userEventRouter.delete('/:id', async (req, res) => {
+userEventRouter.delete('/remove', async (req, res) => {
   try {
-    const deletedEvent = await pool.query('SELECT * FROM events ORDER BY start_time ASC;');
-    res.status(200).send(deletedEvent);
+    const {
+      userId, eventId
+    } = req.body;
+    let response = await pool.query(`DELETE FROM user_event 
+                                      WHERE  userid='${userId}' AND event_id=${eventId}
+                                      RETURNING *;`);
+    response = response.rows.map((e) => ({
+      userId: e.userid,
+      eventId: e.event_id,
+    }));
+    console.log(response);
+    res.status(200).send(response);
   } catch (err) {
     console.error(err.message);
     res.status(500).send(err.message);

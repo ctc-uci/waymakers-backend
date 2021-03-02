@@ -122,24 +122,43 @@ eventRouter.post('/add', async (req, res) => {
 
 // Update an event
 eventRouter.put('/:id', async (req, res) => {
-  console.log(req.body);
   try {
     const { id } = req.params;
     const {
-      eventName, eventLocation, eventDescription, startTime, endTime, isAllDay, eventType, division, eventLimit
+      eventName,
+      eventLocation,
+      eventDescription,
+      startTime,
+      endTime,
+      isAllDay,
+      eventType,
+      division,
+      eventLimit,
     } = req.body;
     const response = await pool.query(`UPDATE events 
-                      SET event_name = '${eventName}', 
-                      event_location = '${eventLocation}', 
-                      event_description = '${eventDescription}',
-                      start_time = '${startTime}', 
-                      end_time = '${endTime}', 
-                      all_day = '${isAllDay}',
-                      event_type = '${eventType}',
-                      division = '${division}',
-                      event_limit = '${eventLimit}'
-                      WHERE event_id = ${id}
-                      RETURNING *`);
+                      SET event_name = $1, 
+                      event_location = $2, 
+                      event_description = $3,
+                      start_time = $4, 
+                      end_time = $5, 
+                      all_day = $6,
+                      event_type = $7,
+                      division = $8,
+                      event_limit = $9
+                      WHERE event_id = $10
+                      RETURNING *`,
+    [
+      eventName,
+      eventLocation,
+      eventDescription,
+      startTime,
+      endTime,
+      isAllDay,
+      eventType,
+      division,
+      eventLimit,
+      id,
+    ]);
     if (response.rowCount === 0) {
       res.status(400).send();
     } else {
@@ -156,7 +175,7 @@ eventRouter.put('/:id', async (req, res) => {
 eventRouter.delete('/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const response = await pool.query(`DELETE FROM events WHERE event_id = ${id} RETURNING *`);
+    const response = await pool.query('DELETE FROM events WHERE event_id = $1 RETURNING *', [id]);
     if (response.rowCount === 0) {
       res.status(400).send();
     } else {

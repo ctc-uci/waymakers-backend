@@ -27,8 +27,6 @@ function convertEventSnakeToCamel(events) {
   }));
 }
 
-// TODO: need to add event limits
-
 // Get all events
 eventRouter.get('/', async (req, res) => {
   try {

@@ -35,7 +35,8 @@ userEventRouter.get('/:id', async (req, res) => {
                                         FROM user_event
                                         INNER JOIN events
                                         ON user_event.event_id = events.event_id
-                                        WHERE userid = '${id}';`);
+                                        WHERE userid = $1;`,
+    [id]);
     userEvents = convertEventsSnakeToCamel(userEvents.rows);
     res.status(200).send(userEvents);
   } catch (err) {
@@ -50,7 +51,7 @@ userEventRouter.post('/add', async (req, res) => {
     const {
       userId, eventId,
     } = req.body;
-    const checker = await pool.query(`SELECT * FROM user_event WHERE userid = '${userId}' AND event_id = ${eventId}`);
+    const checker = await pool.query('SELECT * FROM user_event WHERE userid = $1 AND event_id =$2', [userId, eventId]);
     if (checker.rowCount !== 0) {
       res.status(400).send('Event already already in database');
       return;
@@ -58,9 +59,10 @@ userEventRouter.post('/add', async (req, res) => {
     let response = await pool.query(`INSERT INTO user_event 
                                     (userid, event_id) 
                                     VALUES (
-                                      '${userId}', 
-                                      ${eventId})
-                                    RETURNING *`);
+                                      $1, 
+                                      $2)
+                                    RETURNING *;`,
+    [userId, eventId]);
     if (response.rowCount === 0) {
       res.status(400).send(response);
     }
@@ -79,11 +81,12 @@ userEventRouter.post('/add', async (req, res) => {
 userEventRouter.delete('/remove', async (req, res) => {
   try {
     const {
-      userId, eventId
+      userId, eventId,
     } = req.body;
     let response = await pool.query(`DELETE FROM user_event 
-                                      WHERE  userid='${userId}' AND event_id=${eventId}
-                                      RETURNING *;`);
+                                      WHERE  userid=$1 AND event_id=$2
+                                      RETURNING *;`,
+    [userId, eventId]);
     response = response.rows.map((e) => ({
       userId: e.userid,
       eventId: e.event_id,

@@ -12,6 +12,16 @@ CREATE TABLE Users
     PRIMARY KEY (userid)
 );
 
+-- Trigger: user_changed_volunteer_tier
+
+-- DROP TRIGGER user_changed_volunteer_tier ON public.users;
+
+CREATE TRIGGER user_changed_volunteer_tier
+    AFTER UPDATE 
+    ON public.users
+    FOR EACH ROW
+    EXECUTE PROCEDURE public.update_qualification_status();
+
 CREATE TABLE Permissions
 (
     userid CHAR(28) NOT NULL,

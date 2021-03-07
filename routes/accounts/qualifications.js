@@ -50,6 +50,20 @@ qualificationsRouter.get('/', async (req, res) => {
   }
 });
 
+// Get qualification by ID
+qualificationsRouter.get('/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const qualifications = await pool.query(`
+        SELECT * FROM qualification
+        WHERE id = $1
+    `, [id]);
+    res.send(qualifications.rows);
+  } catch (err) {
+    res.status(400).send(err.message);
+  }
+});
+
 // Create qualification
 qualificationsRouter.post('/', async (req, res) => {
   try {

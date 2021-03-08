@@ -1,3 +1,13 @@
+-- Trigger: user_changed_volunteer_tier
+
+-- DROP TRIGGER user_changed_volunteer_tier ON public.users;
+
+CREATE TRIGGER user_changed_volunteer_tier
+    AFTER UPDATE
+    ON public.users
+    FOR EACH ROW
+    EXECUTE PROCEDURE public.update_qualification_status();
+
 CREATE TABLE Users
 (
     userid CHAR(28) NOT NULL,
@@ -12,15 +22,26 @@ CREATE TABLE Users
     PRIMARY KEY (userid)
 );
 
--- Trigger: user_changed_volunteer_tier
+-- FUNCTION: public.update_qualification_status()
 
--- DROP TRIGGER user_changed_volunteer_tier ON public.users;
+-- DROP FUNCTION public.update_qualification_status();
 
-CREATE TRIGGER user_changed_volunteer_tier
-    AFTER UPDATE 
-    ON public.users
-    FOR EACH ROW
-    EXECUTE PROCEDURE public.update_qualification_status();
+CREATE FUNCTION public.update_qualification_status()
+    RETURNS trigger
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE NOT LEAKPROOF
+AS $BODY$
+BEGIN
+	DELETE from qualification_status where user_id = NEW.userid;
+	INSERT INTO qualification_status(user_id, qualification_id)
+	SELECT NEW.userid, id FROM qualification WHERE volunteer_tier = NEW.tier;
+	RETURN NEW;
+END;
+$BODY$;
+
+ALTER FUNCTION public.update_qualification_status()
+    OWNER TO wmk_dev;
 
 CREATE TABLE Permissions
 (

@@ -101,10 +101,3 @@ $BODY$;
 
 ALTER FUNCTION public.add_qualification_statues()
     OWNER TO wmk_dev;
-
--- trigger to add new qualifications to all users 
-CREATE TRIGGER add_qualification_to_Users
-AFTER INSERT
-ON qualification
-FOR EACH ROW 
-EXECUTE PROCEDURE add_qualifications();

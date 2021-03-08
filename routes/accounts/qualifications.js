@@ -49,13 +49,22 @@ qualificationsRouter.get('/', async (req, res) => {
   }
 });
 
-// Get incomplete qualifications
-qualificationsRouter.get('/:incomplete', async (req, res) => {
-  const { id } = req.params;
-  console.log(`Getting volunteers who need qualifications reviewed ${id}`);
+// Get all users with incomplete qualifications
+qualificationsRouter.get('/incomplete', async (req, res) => {
+  console.log('Getting list of volunteers who need qualifications reviewed');
   try {
-    const qualification = await pool.query('SELECT $1 FROM qualification_status WHERE completion_status=$2', [id, false]);
-    res.send(qualification.rows);
+    const users = await pool.query(`
+        SELECT DISTINCT
+          users.userid,
+          users.firstname,
+          users.lastname
+        FROM
+          users
+        INNER JOIN qualification_status ON users.userid = qualification_status.user_id
+        WHERE
+          qualification_status.completion_status = FALSE;
+    `);
+    res.send(users.rows);
   } catch (err) {
     res.status(400).send(err.message);
   }

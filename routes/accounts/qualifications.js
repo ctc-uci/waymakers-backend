@@ -49,9 +49,9 @@ qualificationsRouter.get('/', async (req, res) => {
   }
 });
 
-// Get all users with incomplete qualifications
+// Get all users with pending qualifications
 qualificationsRouter.get('/incomplete', async (req, res) => {
-  console.log('Getting list of volunteers who need qualifications reviewed');
+  console.log('Getting list of volunteers who have pending qualifications');
   try {
     const users = await pool.query(`
         SELECT DISTINCT
@@ -62,7 +62,7 @@ qualificationsRouter.get('/incomplete', async (req, res) => {
           users
         INNER JOIN qualification_status ON users.userid = qualification_status.user_id
         WHERE
-          qualification_status.completion_status = FALSE;
+          qualification_status.completion_status = 'Pending';
     `);
     res.send(users.rows);
   } catch (err) {

@@ -92,18 +92,9 @@ CREATE FUNCTION public.add_qualification_statues()
     COST 100
     VOLATILE NOT LEAKPROOF
 AS $BODY$
-DECLARE
-    r users%rowtype;
 BEGIN
-    FOR r IN
-        SELECT userid FROM users WHERE tier = NEW.volunteer_tier
-    LOOP
-        INSERT INTO qualification_status(user_id, qualification_id) VALUES
-        (
-            r.userid,
-            NEW.id
-        );
-    END LOOP;
+	INSERT INTO qualification_status(user_id, qualification_id)
+	SELECT userid, NEW.id FROM users WHERE tier = NEW.volunteer_tier;
     RETURN NEW;
 END;
 $BODY$;

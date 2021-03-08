@@ -17,16 +17,16 @@ qualificationsRouter.get('/user/:userID', async (req, res) => {
           qualification.id,
           qualification.qualification_name,
           qualification.qualification_description,
-          qualification.volunteerTier,
-          qualificationStatus.userID,
-          qualificationStatus.completionStatus,
-          qualificationStatus.completion_timestamp,
-          qualificationStatus.notes
+          qualification.volunteer_tier,
+          qualification_status.user_id,
+          qualification_status.completion_status,
+          qualification_status.completion_timestamp,
+          qualification_status.notes
         FROM
-          qualificationStatus
-        INNER JOIN qualification ON qualificationStatus.qualificationID = qualification.id
+          qualification_status
+        INNER JOIN qualification ON qualification_status.qualification_id = qualification.id
         WHERE
-          qualificationStatus.userID = $1;
+          qualification_status.user_id = $1;
     `, [userID]);
 
     res.send(userQualificationQuery.rows);
@@ -41,7 +41,7 @@ qualificationsRouter.get('/', async (req, res) => {
     const qualifications = await pool.query(`
         SELECT * FROM qualification
         ORDER BY
-        volunteerTier ASC, id ASC
+        volunteer_tier ASC, id ASC
     `);
     res.send(qualifications.rows);
   } catch (err) {
@@ -54,7 +54,7 @@ qualificationsRouter.get('/:incomplete', async (req, res) => {
   const { id } = req.params;
   console.log(`Getting volunteers who need qualifications reviewed ${id}`);
   try {
-    const qualification = await pool.query('SELECT $1 FROM qualificationStatus WHERE completionStatus=$2', [id, false]);
+    const qualification = await pool.query('SELECT $1 FROM qualification_status WHERE completion_status=$2', [id, false]);
     res.send(qualification.rows);
   } catch (err) {
     res.status(400).send(err.message);
@@ -68,7 +68,7 @@ qualificationsRouter.post('/', async (req, res) => {
       name, description, volunteerTier,
     } = req.body;
     const qualification = await pool.query(`
-        INSERT INTO qualification(qualification_name, qualification_description, volunteerTier) VALUES
+        INSERT INTO qualification(qualification_name, qualification_description, volunteer_tier) VALUES
         ($1, $2, $3) RETURNING *`,
     [name, description, volunteerTier]);
     res.send(
@@ -126,13 +126,13 @@ qualificationsRouter.put('/status', async (req, res) => {
     else if (qualificationID == null) res.status(400).send("Can't update qualificationStatus without qualificationID");
     else if (completionStatus == null) res.status(400).send("Can't update qualificationStatus without completionStatus");
     await pool.query(`
-      UPDATE qualificationStatus
+      UPDATE qualification_status
       SET
-        completionStatus = $1
+        completion_status = $1
         completion_timestamp = SELECT NOW()::timestamp
       WHERE
-        userID = $2 AND
-        qualificationID = $3
+        user_id = $2 AND
+        qualification_id = $3
     `,
     [completionStatus, userID, qualificationID]);
     res.send(`Qualification_status of user ${userID} with qualificationID ${qualificationID} was updated`);

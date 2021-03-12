@@ -43,11 +43,11 @@ volunteerDataRouter.get('/all/', async (req, res) => {
     const allEvents = await pool.query(`SELECT USERS.*,
                                           PERMISSIONS.PERMISSIONS,
                                           date_part('year', AGE(USERS.birthdate))::int,
-                                          SUM(TOTAL_HOURS)
+                                          SUM(TOTAL_HOURS)::int
                                         FROM USERS
                                         INNER JOIN PERMISSIONS ON PERMISSIONS.USERID = USERS.USERID
                                         INNER JOIN LOG_HOURS ON LOG_HOURS.USERID = USERS.USERID
-                                        INNER JOIN USER_EVENT ON USER_EVENT.EVENT_ID = LOG_HOURS.EVENT_ID
+                                        INNER JOIN USER_EVENT ON USER_EVENT.EVENT_ID = LOG_HOURS.EVENT_ID AND USER_EVENT.USERID = LOG_HOURS.USERID
                                         WHERE USER_EVENT.EVENT_ID = $1
                                         GROUP BY 
                                           USERS.USERID,

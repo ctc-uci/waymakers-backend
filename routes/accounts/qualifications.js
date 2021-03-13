@@ -138,7 +138,7 @@ qualificationsRouter.put('/status', async (req, res) => {
       UPDATE qualification_status
       SET
         completion_status = $1,
-        completion_timestamp = SELECT NOW()::timestamp
+        completion_timestamp = (SELECT NOW()::timestamp)
       WHERE
         user_id = $2 AND
         qualification_id = $3

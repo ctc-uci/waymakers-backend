@@ -18,12 +18,6 @@ function convertEventSnakeToCamel(events) {
     location: event.event_location,
     description: event.event_description,
     id: event.event_id,
-    st: event.st,
-    et: event.et,
-    startMonth: event.start_month,
-    startDay: event.start_day,
-    endMonth: event.end_month,
-    endDay: event.end_day,
   }));
 }
 
@@ -43,13 +37,7 @@ eventRouter.get('/', async (req, res) => {
 eventRouter.get('/:id', async (req, res) => {
   const { id } = req.params;
   try {
-    let event = await pool.query(`SELECT *, 
-                                    (events.start_time at time zone 'america/los_angeles' at time zone 'utc')::time as st,
-                                    (events.end_time at time zone 'america/los_angeles' at time zone 'utc')::time as et,
-                                    date_part('month', events.start_time at time zone 'america/los_angeles' at time zone 'utc') as start_month,
-                                    date_part('day', events.start_time at time zone 'america/los_angeles' at time zone 'utc') as start_day,
-                                    date_part('month', events.end_time at time zone 'america/los_angeles' at time zone 'utc') as end_month,
-                                    date_part('day', events.end_time at time zone 'america/los_angeles' at time zone 'utc') as end_day
+    let event = await pool.query(`SELECT *
                                   FROM events WHERE event_id = $1`,
     [id]);
     console.log(event.rows);

@@ -53,9 +53,9 @@ CREATE TABLE Permissions
 CREATE TABLE Availability
 (
     userid CHAR(28) NOT NULL,
-    dayofweek ENUM('M','T','W','TH','F','S','SU') NOT NULL,
-    starttime TIME NOT NULL,
-    endtime TIME NOT NULL,
+    dayOfWeek INT NOT NULL,
+    startTime TIME NOT NULL,
+    PRIMARY KEY, (userid, dayOfWeek, startTime)
     FOREIGN KEY (userid) REFERENCES Users (userid) ON DELETE CASCADE
 );
 

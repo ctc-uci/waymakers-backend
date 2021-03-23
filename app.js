@@ -11,11 +11,14 @@ require('dotenv').config();
 const inventoryRouter = require('./routes/inventory/inventory');
 const accountRouter = require('./routes/accounts/accounts');
 const qualificationRouter = require('./routes/accounts/qualifications');
+const availabilityRouter = require('./routes/availability/availability');
 const categoryRouter = require('./routes/inventory/category');
 const divisionRouter = require('./routes/inventory/divisions');
 const warehouseRouter = require('./routes/inventory/warehouse');
 const eventRouter = require('./routes/events/events');
+const volunteerDataRouter = require('./routes/events/volunteerData');
 const logRouter = require('./routes/events/logs');
+const userEventRouter = require('./routes/events/userEvent');
 
 const app = express();
 const port = 3001;
@@ -35,6 +38,8 @@ app.use(cors({
   origin: `${reactAppHost}:${reactAppPort}`,
 }));
 
+app.use('/volunteerData', volunteerDataRouter);
+app.use('/availability', [verifyToken, availabilityRouter]);
 app.use('/inventory', [verifyToken, inventoryRouter]);
 app.use('/category', [verifyToken, categoryRouter]);
 app.use('/divisions', [verifyToken, divisionRouter]);
@@ -42,6 +47,7 @@ app.use('/warehouses', [verifyToken, warehouseRouter]);
 app.use('/accounts', [verifyToken, accountRouter]);
 app.use('/qualifications', [verifyToken, qualificationRouter]);
 app.use('/events', [verifyToken, eventRouter]);
+app.use('/userEvent', [verifyToken, userEventRouter]);
 app.use('/auth', authRouter);
 app.use('/logs', logRouter);
 

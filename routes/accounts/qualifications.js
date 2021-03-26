@@ -47,6 +47,20 @@ qualificationsRouter.get('/', async (req, res) => {
   }
 });
 
+// Get qualification by ID
+qualificationsRouter.get('/:qualificationID', async (req, res) => {
+  const { qualificationID } = req.params;
+  try {
+    const qualification = await pool.query(`
+        SELECT * FROM qualification
+        WHERE id = $1;
+    `, [qualificationID]);
+    res.send(qualification.rows[0]);
+  } catch (err) {
+    res.status(400).send(err.message);
+  }
+});
+
 // Get all users with pending qualifications
 qualificationsRouter.get('/incomplete', async (req, res) => {
   console.log('Getting list of volunteers who have pending qualifications');
@@ -102,9 +116,11 @@ qualificationsRouter.delete('/', async (req, res) => {
 // TODO: 
 //  - Add ability to edit qualification_tiers
 //  - Add trigger to update qualificationStatus table when qualification_tiers changes
-qualificationsRouter.put('/', async (req, res) => {
+//  - Replace description or add column for "link"
+qualificationsRouter.put('/:id', async (req, res) => {
   try {
-    const { id, name, description } = req.body;
+    const { id } = req.params;
+    const { name, description } = req.body;
     console.log(id);
     console.log(name);
     console.log(description);

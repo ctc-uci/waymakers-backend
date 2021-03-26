@@ -101,9 +101,9 @@ qualificationsRouter.post('/', async (req, res) => {
 });
 
 // Delete qualification
-qualificationsRouter.delete('/', async (req, res) => {
+qualificationsRouter.delete('/:id', async (req, res) => {
   try {
-    const { id } = req.body;
+    const { id } = req.params;
     if (id == null) res.status(400).send("Can't delete qualification without ID");
     await pool.query('DELETE FROM qualification WHERE id = $1 RETURNING *', [id]);
     res.send(`Qualification with id ${id} was deleted!`);
@@ -114,13 +114,12 @@ qualificationsRouter.delete('/', async (req, res) => {
 
 // Edit qualification
 // TODO: 
-//  - Add ability to edit qualification_tiers
 //  - Add trigger to update qualificationStatus table when qualification_tiers changes
 //  - Replace description or add column for "link"
 qualificationsRouter.put('/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, description } = req.body;
+    const { name, description, qualificationTiers} = req.body;
     console.log(id);
     console.log(name);
     console.log(description);
@@ -129,11 +128,12 @@ qualificationsRouter.put('/:id', async (req, res) => {
       UPDATE qualification
       SET
         qualification_name = $2,
-        qualification_description = $3
+        qualification_description = $3,
+        qualification_tiers = $4
       WHERE
         id = $1
     `,
-    [id, name, description]);
+    [id, name, description, qualificationTiers]);
     res.send(`Account with id ${id} was updated!`);
   } catch (err) {
     res.status(400).send(err.message);

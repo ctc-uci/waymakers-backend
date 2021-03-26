@@ -17,7 +17,7 @@ qualificationsRouter.get('/user/:userID', async (req, res) => {
           qualification.id,
           qualification.qualification_name,
           qualification.qualification_description,
-          qualification.volunteer_tier,
+          qualification.qualification_tiers,
           qualification_status.user_id,
           qualification_status.completion_status,
           qualification_status.completion_timestamp,
@@ -40,8 +40,6 @@ qualificationsRouter.get('/', async (req, res) => {
   try {
     const qualifications = await pool.query(`
         SELECT * FROM qualification
-        ORDER BY
-        volunteer_tier ASC, id ASC
     `);
     res.send(qualifications.rows);
   } catch (err) {
@@ -74,12 +72,12 @@ qualificationsRouter.get('/incomplete', async (req, res) => {
 qualificationsRouter.post('/', async (req, res) => {
   try {
     const {
-      name, description, volunteerTier,
+      name, description, volunteerTier, qualificationTiers,
     } = req.body;
     const qualification = await pool.query(`
-        INSERT INTO qualification(qualification_name, qualification_description, volunteer_tier) VALUES
-        ($1, $2, $3) RETURNING *`,
-    [name, description, volunteerTier]);
+        INSERT INTO qualification(qualification_name, qualification_description, volunteer_tier, qualification_tiers) VALUES
+        ($1, $2, $3, $4) RETURNING *`,
+    [name, description, volunteerTier, qualificationTiers]);
     res.send(
       qualification.rows,
     );
@@ -101,7 +99,9 @@ qualificationsRouter.delete('/', async (req, res) => {
 });
 
 // Edit qualification
-// TODO: Add trigger to update qualificationStatus table when volunteerTier changes
+// TODO: 
+//  - Add ability to edit qualification_tiers
+//  - Add trigger to update qualificationStatus table when qualification_tiers changes
 qualificationsRouter.put('/', async (req, res) => {
   try {
     const { id, name, description } = req.body;

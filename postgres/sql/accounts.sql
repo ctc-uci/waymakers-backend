@@ -35,7 +35,7 @@ AS $BODY$
 BEGIN
 	DELETE from qualification_status where user_id = NEW.userid;
 	INSERT INTO qualification_status(user_id, qualification_id)
-	SELECT NEW.userid, id FROM qualification WHERE volunteer_tier = NEW.tier;
+	SELECT NEW.userid, id FROM qualification WHERE NEW.tier = ANY(qualification_tiers);
 	RETURN NEW;
 END;
 $BODY$;
@@ -66,6 +66,7 @@ CREATE TABLE qualification
     qualification_name character varying COLLATE pg_catalog."default" NOT NULL,
     qualification_description character varying COLLATE pg_catalog."default",
     volunteer_tier integer NOT NULL,
+    qualification_tiers integer[],
     CONSTRAINT qualification_pkey PRIMARY KEY (id)
 )
 
@@ -115,7 +116,7 @@ CREATE FUNCTION public.add_qualification_statues()
 AS $BODY$
 BEGIN
 	INSERT INTO qualification_status(user_id, qualification_id)
-	SELECT userid, NEW.id FROM users WHERE tier = NEW.volunteer_tier;
+	SELECT userid, NEW.id FROM users WHERE tier = ANY(NEW.qualification_tiers);
     RETURN NEW;
 END;
 $BODY$;

@@ -57,7 +57,39 @@ logRouter.post('/add', async (req, res) => {
   }
 });
 
+// Get approved hours of a specific users
+logRouter.get('/approved', async (req, res) => {
+  // TODO: validate userId exists
+  const {
+    userId,
+  } = req.query;
+
+  try {
+    const logs = await pool.query(`SELECT log_hours.*, events.* 
+                                FROM log_hours
+                                INNER JOIN events 
+                                ON log_hours.event_id = events.event_id
+                                WHERE log_hours.userid = $1
+                                AND log_hours.log_status = 'approved'`, [userId]);
+
+    const out = logs.rows.map((row) => ({
+      eventName: row.event_name,
+      location: row.event_location,
+      startTime: row.log_start,
+      endTime: row.log_end,
+      hours: row.total_hours,
+    }));
+
+    res.status(200).send(out);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send(err.message);
+  }
+});
+
 // Get all logs
+// TODO: add another sub layer (/logs/find/:id) so it doesn't collide
+// eg. /logs/add can be captured here
 logRouter.get('/:id', async (req, res) => {
   const { id } = req.params;
   try {

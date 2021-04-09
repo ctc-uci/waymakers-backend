@@ -62,7 +62,7 @@ logRouter.get('/pending', async (req, res) => {
   const { userId } = req.query;
 
   try {
-    const logs = await pool.query(`SELECT log_hours.*, events.* 
+    let logs = await pool.query(`SELECT log_hours.*, events.* 
                                   FROM log_hours
                                   INNER JOIN events 
                                   ON log_hours.event_id = events.event_id

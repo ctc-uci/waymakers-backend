@@ -57,6 +57,27 @@ logRouter.post('/add', async (req, res) => {
   }
 });
 
+// Get logs that are pending / in review
+logRouter.get('/pending', async (req, res) => {
+  const { userId } = req.query;
+
+  try {
+    const logs = await pool.query(`SELECT log_hours.*, events.* 
+                                  FROM log_hours
+                                  INNER JOIN events 
+                                  ON log_hours.event_id = events.event_id
+                                  WHERE log_hours.log_status = 'pending'
+                                  AND log_hours.userid = $1
+                                  `, [userId]);
+
+    logs = convertLogSnakeToCamel(logs.rows);
+    res.status(200).send(logs);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send(err.message);
+  }
+});
+
 // Get all logs
 logRouter.get('/:id', async (req, res) => {
   const { id } = req.params;

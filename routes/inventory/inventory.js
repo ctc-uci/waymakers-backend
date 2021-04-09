@@ -42,11 +42,18 @@ inventoryRouter.get('/', async (req, res) => {
 
 // Gets the X most recently edited items (3 by default)
 inventoryRouter.get('/top/', async (req, res) => {
+  const { warehouse } = req.query;
+
   try {
     const numItems = req.query.numItems == null ? 3 : req.query.numItems;
     if (parseInt(numItems, 10) > 0) {
-      const items = await pool.query('SELECT * FROM item ORDER BY last_edited DESC LIMIT $1', [numItems]);
-      res.send(items.rows);
+      if (warehouse) {
+        const items = await pool.query('SELECT * FROM item WHERE warehouse_num = $1 ORDER BY last_edited DESC LIMIT $2', [warehouse, numItems]);
+        res.send(items.rows);
+      } else {
+        const items = await pool.query('SELECT * FROM item ORDER BY last_edited DESC LIMIT $1', [numItems]);
+        res.send(items.rows);
+      }
     } else res.status(400).send('Invalid number of items requested');
   } catch (err) {
     res.status(400).send(err.message);

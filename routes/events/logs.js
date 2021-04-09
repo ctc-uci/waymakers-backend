@@ -57,6 +57,32 @@ logRouter.post('/add', async (req, res) => {
   }
 });
 
+// Get unsubmitted hours of specific users
+logRouter.get('/unsubmitted', async (req, res) => {
+  const { userId } = req.query;
+
+  try {
+    const logs = await pool.query(`SELECT log_hours.*, events.* 
+                                  FROM log_hours
+                                  INNER JOIN events 
+                                  ON log_hours.event_id = events.event_id
+                                  WHERE log_hours.userid = $1
+                                  AND log_hours.log_status = 'unsubmitted'`, [userId]);
+
+    const out = logs.rows.map((row) => ({
+      eventName: row.event_name,
+      location: row.event_location,
+      startTime: row.log_start,
+      endTime: row.log_end,
+    }));
+
+    res.status(200).send(out);
+  } catch (err) {
+    console.log(err.message);
+    res.status(500).send(err.message);
+  }
+});
+
 // Get all logs
 logRouter.get('/:id', async (req, res) => {
   const { id } = req.params;

@@ -34,28 +34,28 @@ accountRouter.get('/:id', async (req, res) => {
 });
 
 // Create an account
-accountRouter.post('/', async (req, res) => {
-  try {
-    const {
-      userID, firstName, lastName, birthDate, locationStreet, locationCity,
-      locationState, locationZip, tier, permission,
-    } = req.body;
-    const newAccount = await pool.query(`
-      INSERT INTO users (userid, firstname, lastname, birthdate, locationstreet, locationcity,
-      locationstate, locationzip, tier)
-      VALUES ('${userID}', '${firstName}', '${lastName}', '${birthDate}', '${locationStreet}',
-      '${locationCity}', '${locationState}', '${locationZip}', '${tier}') RETURNING *`);
-    const newPermission = await pool.query(`
-      INSERT INTO permissions (userid, permissions) 
-      VALUES ('${userID}', '${permission}') RETURNING *`);
-    res.send({
-      newAccount: newAccount.rows[0],
-      newPermission: newPermission.rows[0],
-    });
-  } catch (err) {
-    res.status(400).send(err.message);
-  }
-});
+// accountRouter.post('/', async (req, res) => {
+//   try {
+//     const {
+//       userID, firstName, lastName, birthDate, locationStreet, locationCity,
+//       locationState, locationZip, tier, permission,
+//     } = req.body;
+//     const newAccount = await pool.query(`
+//       INSERT INTO users (userid, firstname, lastname, birthdate, locationstreet, locationcity,
+//       locationstate, locationzip, tier)
+//       VALUES ('${userID}', '${firstName}', '${lastName}', '${birthDate}', '${locationStreet}',
+//       '${locationCity}', '${locationState}', '${locationZip}', '${tier}') RETURNING *`);
+//     const newPermission = await pool.query(`
+//       INSERT INTO permissions (userid, permissions)
+//       VALUES ('${userID}', '${permission}') RETURNING *`);
+//     res.send({
+//       newAccount: newAccount.rows[0],
+//       newPermission: newPermission.rows[0],
+//     });
+//   } catch (err) {
+//     res.status(400).send(err.message);
+//   }
+// });
 
 // Update an account
 accountRouter.put('/:id', async (req, res) => {

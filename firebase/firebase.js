@@ -4,10 +4,7 @@ require('dotenv').config();
 
 let credentials;
 
-if (process.env.NODE_ENV !== 'PRODUCTION') {
-  // eslint-disable-next-line global-require
-  credentials = require('../waymakers-6465d-firebase-adminsdk-2wasv-0fba3e25c9.json');
-} else {
+if (process.env.NODE_ENV === 'production') {
   credentials = {
     type: process.env.FIREBASE_TYPE,
     project_id: process.env.FIREBASE_PRIVATE_KEY_ID,
@@ -20,6 +17,9 @@ if (process.env.NODE_ENV !== 'PRODUCTION') {
     auth_provider_x509_cert_url: process.env.FIREBASE_AUTH_PROVIDER_CERT_URL,
     client_x509_cert_url: process.env.FIREBASE_CLIENT_CERT_URL,
   };
+} else {
+  // eslint-disable-next-line global-require
+  credentials = require('../waymakers-6465d-firebase-adminsdk-2wasv-0fba3e25c9.json');
 }
 
 admin.initializeApp({

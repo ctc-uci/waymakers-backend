@@ -23,10 +23,11 @@ const app = express();
 
 let port;
 
-if (process.env.NODE_ENV !== 'PRODUCTION') {
-  port = 3001;
-} else {
+if (process.env.NODE_ENV === 'production') {
+  // passed in from heroku
   port = process.env.PORT;
+} else {
+  port = 3001;
 }
 
 const reactAppHost = process.env.WMK_REACT_APP_HOST;
@@ -34,10 +35,18 @@ const reactAppPort = process.env.WMK_REACT_APP_PORT;
 
 app.use(express.json());
 app.use(cookieParser());
-app.use(cors({
-  credentials: true,
-  origin: `${reactAppHost}:${reactAppPort}`,
-}));
+
+if (process.env.NODE_ENV === 'production') {
+  app.use(cors({
+    credentials: true,
+    origin: `${reactAppHost}`,
+  }));
+} else {
+  app.use(cors({
+    credentials: true,
+    origin: `${reactAppHost}:${reactAppPort}`,
+  }));
+}
 
 app.use('/volunteerData', volunteerDataRouter);
 app.use('/availability', [verifyToken, availabilityRouter]);

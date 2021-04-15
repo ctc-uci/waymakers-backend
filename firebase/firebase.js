@@ -1,12 +1,12 @@
 const admin = require('firebase-admin');
-const serviceAccount = require('../waymakers-6465d-firebase-adminsdk-2wasv-0fba3e25c9.json');
 
 require('dotenv').config();
 
 let credentials;
 
 if (process.env.NODE_ENV !== 'PRODUCTION') {
-  credentials = serviceAccount;
+  // eslint-disable-next-line global-require
+  credentials = require('../waymakers-6465d-firebase-adminsdk-2wasv-0fba3e25c9.json');
 } else {
   credentials = {
     type: process.env.FIREBASE_TYPE,

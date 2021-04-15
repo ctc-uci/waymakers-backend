@@ -42,7 +42,7 @@ if (process.env.NODE_ENV === 'production') {
     origin: `${reactAppHost}`,
   }));
 
-  app.set('trust proxy', 1);
+  app.set('trust proxy', true);
 } else {
   app.use(cors({
     credentials: true,

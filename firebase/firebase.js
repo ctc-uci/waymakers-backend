@@ -26,3 +26,5 @@ admin.initializeApp({
   credential: admin.credential.cert(credentials),
   databaseURL: 'https://waymakers.firebaseio.com',
 });
+
+module.exports = admin;

@@ -20,7 +20,14 @@ const userEventRouter = require('./routes/events/userEvent');
 const registerRouter = require('./routes/register/register');
 
 const app = express();
-const port = 3001;
+
+let port;
+
+if (process.env.NODE_ENV !== 'PRODUCTION') {
+  port = 3001;
+} else {
+  port = process.env.PORT;
+}
 
 const reactAppHost = process.env.WMK_REACT_APP_HOST;
 const reactAppPort = process.env.WMK_REACT_APP_PORT;

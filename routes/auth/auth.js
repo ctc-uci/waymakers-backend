@@ -5,7 +5,7 @@ const admin = require('../../firebase/firebase');
 const authRouter = express();
 
 const verifyToken = async (req, res, next) => {
-  console.log('@verifyToken in', JSON.stringify(req, null, 2));
+  console.log('@verifyToken in', req);
   const { cookies: { accessToken } } = req;
 
   if (!accessToken) {

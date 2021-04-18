@@ -1,4 +1,5 @@
 const express = require('express');
+const session = require('express-session');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const { authRouter, verifyToken } = require('./routes/auth/auth');
@@ -34,6 +35,9 @@ const reactAppHost = process.env.WMK_REACT_APP_HOST;
 const reactAppPort = process.env.WMK_REACT_APP_PORT;
 
 app.use(express.json());
+app.use(session({
+  cookie: { domain: `.${process.env.COOKIE_DOMAIN}` },
+}));
 app.use(cookieParser());
 
 if (process.env.NODE_ENV === 'production') {

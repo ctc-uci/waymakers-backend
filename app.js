@@ -34,8 +34,11 @@ if (process.env.NODE_ENV === 'production') {
 const reactAppHost = process.env.WMK_REACT_APP_HOST;
 const reactAppPort = process.env.WMK_REACT_APP_PORT;
 
+console.log(`.${process.env.COOKIE_DOMAIN}`);
+
 app.use(express.json());
 app.use(session({
+  secret: `${process.env.SESSION_SECRET}`,
   cookie: { domain: `.${process.env.COOKIE_DOMAIN}` },
 }));
 app.use(cookieParser());

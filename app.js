@@ -46,7 +46,7 @@ app.use(cookieParser());
 if (process.env.NODE_ENV === 'production') {
   app.use(cors({
     credentials: true,
-    origin: `.${reactAppHost}`,
+    origin: `${reactAppHost}`,
   }));
 
   app.set('trust proxy', true);

@@ -1,5 +1,5 @@
 const express = require('express');
-const session = require('express-session');
+// const session = require('express-session');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const { authRouter, verifyToken } = require('./routes/auth/auth');
@@ -37,10 +37,10 @@ const reactAppPort = process.env.WMK_REACT_APP_PORT;
 console.log(`.${process.env.COOKIE_DOMAIN}`);
 
 app.use(express.json());
-app.use(session({
-  secret: `${process.env.SESSION_SECRET}`,
-  cookie: { domain: `.${process.env.COOKIE_DOMAIN}` },
-}));
+// app.use(session({
+//   secret: `${process.env.SESSION_SECRET}`,
+//   cookie: { domain: process.env.COOKIE_DOMAIN },
+// }));
 app.use(cookieParser());
 
 if (process.env.NODE_ENV === 'production') {
@@ -48,13 +48,20 @@ if (process.env.NODE_ENV === 'production') {
     credentials: true,
     origin: `${reactAppHost}`,
   }));
-
   app.set('trust proxy', true);
+  // app.use(session({
+  //   secret: `${process.env.SESSION_SECRET}`,
+  //   cookie: { domain: process.env.COOKIE_DOMAIN },
+  // }));
 } else {
   app.use(cors({
     credentials: true,
     origin: `${reactAppHost}:${reactAppPort}`,
   }));
+  // app.use(session({
+  //   secret: `${process.env.SESSION_SECRET}`,
+  //   cookie: { secure: true },
+  // }));
 }
 
 app.use('/volunteerData', volunteerDataRouter);

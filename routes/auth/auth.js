@@ -18,7 +18,7 @@ const verifyToken = async (req, res, next) => {
     if (!decodedToken) {
       return res.status(400).send('@verifyToken Empty token from firebase');
     }
-    console.log(decodedToken);
+    console.log('@verifyToken', decodedToken);
 
     return next();
   } catch (err) {

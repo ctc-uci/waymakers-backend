@@ -20,17 +20,34 @@ const userEventRouter = require('./routes/events/userEvent');
 const registerRouter = require('./routes/register/register');
 
 const app = express();
-const port = 3001;
+
+let port;
+
+if (process.env.NODE_ENV === 'production') {
+  // passed in from digital ocean
+  port = process.env.PORT;
+} else {
+  port = 3001;
+}
 
 const reactAppHost = process.env.WMK_REACT_APP_HOST;
 const reactAppPort = process.env.WMK_REACT_APP_PORT;
 
 app.use(express.json());
 app.use(cookieParser());
-app.use(cors({
-  credentials: true,
-  origin: `${reactAppHost}:${reactAppPort}`,
-}));
+
+if (process.env.NODE_ENV === 'production') {
+  app.use(cors({
+    credentials: true,
+    origin: `${reactAppHost}`,
+  }));
+  app.set('trust proxy', true);
+} else {
+  app.use(cors({
+    credentials: true,
+    origin: `${reactAppHost}:${reactAppPort}`,
+  }));
+}
 
 app.use('/volunteerData', volunteerDataRouter);
 app.use('/availability', [verifyToken, availabilityRouter]);

@@ -10,6 +10,7 @@
     "pre-commit-lint": "lint-staged"
   },
   "dependencies": {
+    "aws-sdk": "^2.888.0",
     "body-parser": "^1.19.0",
     "cookie-parser": "^1.4.5",
     "cors": "^2.8.5",

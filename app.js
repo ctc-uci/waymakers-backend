@@ -27,7 +27,7 @@ if (process.env.NODE_ENV === 'production') {
   // passed in from digital ocean
   port = process.env.PORT;
 } else {
-  port = 3001;
+  port = process.env.SELF_PORT;
 }
 
 const reactAppHost = process.env.WMK_REACT_APP_HOST;

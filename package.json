@@ -10,7 +10,11 @@
     "pre-commit-lint": "lint-staged"
   },
   "dependencies": {
+    "@apilayer/mailboxlayer": "^0.1.6",
+    "@sendgrid/client": "^7.4.2",
+    "@sendgrid/mail": "^7.4.2",
     "aws-sdk": "^2.888.0",
+    "axios": "^0.21.1",
     "body-parser": "^1.19.0",
     "cookie-parser": "^1.4.5",
     "cors": "^2.8.5",

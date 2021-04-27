@@ -74,25 +74,29 @@ accountRouter.put('/:id', async (req, res) => {
   try {
     const { id } = req.params;
     const {
-      firstName, lastName, birthDate, locationStreet, locationCity,
-      locationState, locationZip, tier, permission, profilePicture,
+      firstName, lastName, email, phone, birthDate, locationStreet, locationCity,
+      locationState, locationZip, tier, gender, profilePicture,
     } = req.body;
     const userQuery = `
                 UPDATE users
                   SET ${firstName ? `firstname = '${firstName}',` : ''}
                       ${lastName ? `lastname = '${lastName}',` : ''}
                       ${birthDate ? `birthdate = '${birthDate}',` : ''}
+                      ${email ? `email = '${email}',` : ''}
+                      ${phone ? `phone = '${phone}',` : ''}
                       ${locationStreet ? `locationstreet = '${locationStreet}',` : ''}
                       ${locationCity ? `locationcity = '${locationCity}',` : ''}
                       ${locationState ? `locationstate = '${locationState}',` : ''}
                       ${locationZip ? `locationzip = '${locationZip}',` : ''}
+                      ${gender ? `gender = '${gender}',` : ''}
                       ${tier ? `tier = '${tier}',` : ''}
                       ${profilePicture ? `profile_picture = '${profilePicture}'` : ''}
                   WHERE userid = '${id}'
                 `;
     await pool.query(userQuery);
 
-    if (permission) await pool.query(`UPDATE permissions SET permissions = '${permission}' WHERE userid = '${id}'`);
+    // if (permission) await pool.query(`UPDATE permissions
+    // SET permissions = '${permission}' WHERE userid = '${id}'`);
 
     res.send(`Account with id ${id} was updated!`);
   } catch (err) {

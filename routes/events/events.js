@@ -18,6 +18,7 @@ function convertEventSnakeToCamel(events) {
     location: event.event_location,
     description: event.event_description,
     id: event.event_id,
+    isAllDay: event.all_day,
   }));
 }
 

@@ -44,7 +44,7 @@ logRouter.post('/add', async (req, res) => {
     } = req.body;
     const response = await pool.query(`INSERT INTO log_hours
                         (userid, event_id, log_start, log_end, total_hours, additional_notes, log_status) 
-                        VALUES ($1, $2, $3, $4, $5, $6, 'pending')
+                        VALUES ($1, $2, $3, $4, $5, $6, 'approved')
                         RETURNING *`, [userId, eventId, logStart, logEnd, totalHours, additionalNotes]);
     if (response.rowCount === 0) {
       res.status(400).send(response);
@@ -57,109 +57,114 @@ logRouter.post('/add', async (req, res) => {
   }
 });
 
+// DEPRECATED
 // Resubmit a rejected hour
-logRouter.post('/resubmitRejected', async (req, res) => {
-  try {
-    const {
-      logId, logStart, logEnd, totalHours, additionalNotes,
-    } = req.body;
-    const response = await pool.query(`
-        UPDATE log_hours
-        SET log_start = $1, log_end = $2, total_hours = $3, additional_notes = $4, log_status = 'pending', rejected_notes = ''
-        WHERE log_id = $5`, [logStart, logEnd, totalHours, additionalNotes, logId]);
-    if (response.rowCount === 0) {
-      res.status(400).send(response);
-    } else {
-      res.status(200).send(response);
-    }
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).send(err.message);
-  }
-});
+// logRouter.post('/resubmitRejected', async (req, res) => {
+//   try {
+//     const {
+//       logId, logStart, logEnd, totalHours, additionalNotes,
+//     } = req.body;
+//     const response = await pool.query(`
+//         UPDATE log_hours
+//         SET log_start = $1, log_end = $2, total_hours = $3, additional_notes = $4,
+//            log_status = 'pending', rejected_notes = ''
+//         WHERE log_id = $5`, [logStart, logEnd, totalHours, additionalNotes, logId]);
+//     if (response.rowCount === 0) {
+//       res.status(400).send(response);
+//     } else {
+//       res.status(200).send(response);
+//     }
+//   } catch (err) {
+//     console.error(err.message);
+//     res.status(500).send(err.message);
+//   }
+// });
 
+// DEPRECATED
 // Get logs that are pending / in review
-logRouter.get('/rejected', async (req, res) => {
-  const { userId } = req.query;
+// logRouter.get('/rejected', async (req, res) => {
+//   const { userId } = req.query;
 
-  try {
-    const logs = await pool.query(`SELECT log_hours.*, events.* 
-                                  FROM log_hours
-                                  INNER JOIN events 
-                                  ON log_hours.event_id = events.event_id
-                                  WHERE log_hours.log_status = 'rejected'
-                                  AND log_hours.userid = $1
-                                  `, [userId]);
+//   try {
+//     const logs = await pool.query(`SELECT log_hours.*, events.*
+//                                   FROM log_hours
+//                                   INNER JOIN events
+//                                   ON log_hours.event_id = events.event_id
+//                                   WHERE log_hours.log_status = 'rejected'
+//                                   AND log_hours.userid = $1
+//                                   `, [userId]);
 
-    const out = logs.rows.map((row) => ({
-      id: row.log_id,
-      eventName: row.event_name,
-      startTime: row.log_start,
-      endTime: row.log_end,
-      rejectedNotes: row.rejected_notes,
-      eventType: row.event_type,
-      location: row.event_location,
-      additionalNotes: row.additional_notes,
-      division: row.division,
-    }));
+//     const out = logs.rows.map((row) => ({
+//       id: row.log_id,
+//       eventName: row.event_name,
+//       startTime: row.log_start,
+//       endTime: row.log_end,
+//       rejectedNotes: row.rejected_notes,
+//       eventType: row.event_type,
+//       location: row.event_location,
+//       additionalNotes: row.additional_notes,
+//       division: row.division,
+//     }));
 
-    res.status(200).send(out);
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).send(err.message);
-  }
-});
+//     res.status(200).send(out);
+//   } catch (err) {
+//     console.error(err.message);
+//     res.status(500).send(err.message);
+//   }
+// });
 
+// DEPRECATED
 // Remove rejected hour
-logRouter.post('/removeRejected', async (req, res) => {
-  const { userId } = req.query;
-  const { logId } = req.body;
+// logRouter.post('/removeRejected', async (req, res) => {
+//   const { userId } = req.query;
+//   const { logId } = req.body;
 
-  try {
-    const logs = await pool.query(`DELETE FROM log_hours
-                                   WHERE log_id = $1 
-                                   AND userid = $2
-                                   AND log_status = 'rejected'
-                                   RETURNING *
-                                  `, [logId, userId]);
+//   try {
+//     const logs = await pool.query(`DELETE FROM log_hours
+//                                    WHERE log_id = $1
+//                                    AND userid = $2
+//                                    AND log_status = 'rejected'
+//                                    RETURNING *
+//                                   `, [logId, userId]);
 
-    if (logs.rowCount === 0) {
-      res.status(400).send();
-    } else {
-      res.status(200).send();
-    }
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).send(err.message);
-  }
-});
+//     if (logs.rowCount === 0) {
+//       res.status(400).send();
+//     } else {
+//       res.status(200).send();
+//     }
+//   } catch (err) {
+//     console.error(err.message);
+//     res.status(500).send(err.message);
+//   }
+// });
 
+// DEPRECATED
 // Get logs that are pending / in review
-logRouter.get('/pending', async (req, res) => {
-  const { userId } = req.query;
+// logRouter.get('/pending', async (req, res) => {
+//   const { userId } = req.query;
 
-  try {
-    const logs = await pool.query(`SELECT log_hours.*, events.* 
-                                  FROM log_hours
-                                  INNER JOIN events 
-                                  ON log_hours.event_id = events.event_id
-                                  WHERE log_hours.log_status = 'pending'
-                                  AND log_hours.userid = $1
-                                  `, [userId]);
-    const out = logs.rows.map((row) => ({
-      eventName: row.event_name,
-      location: row.event_location,
-      startTime: row.log_start,
-      endTime: row.log_end,
-      hours: row.total_hours,
-    }));
+//   try {
+//     const logs = await pool.query(`SELECT log_hours.*, events.*
+//                                   FROM log_hours
+//                                   INNER JOIN events
+//                                   ON log_hours.event_id = events.event_id
+//                                   WHERE log_hours.log_status = 'pending'
+//                                   AND log_hours.userid = $1
+//                                   `, [userId]);
+//     const out = logs.rows.map((row) => ({
+//       eventName: row.event_name,
+//       location: row.event_location,
+//       startTime: row.log_start,
+//       endTime: row.log_end,
+//       hours: row.total_hours,
+//     }));
 
-    res.status(200).send(out);
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).send(err.message);
-  }
-});
+//     res.status(200).send(out);
+//   } catch (err) {
+//     console.error(err.message);
+//     res.status(500).send(err.message);
+//   }
+// });
 
 // Get unsubmitted hours of specific users
 logRouter.get('/unsubmitted', async (req, res) => {

@@ -57,6 +57,7 @@ accountRouter.get('/:id', async (req, res) => {
   const { id } = req.params;
   try {
     const account = await pool.query(`SELECT * FROM users WHERE userid = '${id}'`);
+    // console.log(account);
     const permission = await pool.query(`SELECT * FROM permissions WHERE userid = '${id}'`);
     res.send({
       account: account.rows[0],

@@ -24,6 +24,7 @@ function convertEventsSnakeToCamel(userEvents) {
     startDay: userEvent.start_day,
     endMonth: userEvent.end_month,
     endDay: userEvent.end_day,
+    isAllDay: userEvent.all_day,
   }));
 }
 

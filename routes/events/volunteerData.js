@@ -10,18 +10,23 @@ volunteerDataRouter.use(express.json());
 volunteerDataRouter.get('/top/', async (req, res) => {
   const { event } = req.query;
   try {
-    const allEvents = await pool.query(`SELECT log_hours.userid, firstname, lastname, SUM(total_hours) FROM log_hours
-                                        INNER JOIN users ON
-                                            log_hours.userid=users.userid
-                                        WHERE
-                                          log_hours.event_id = $1
-                                        GROUP BY
-                                            log_hours.userid,
-                                            firstname,
-                                            lastname
-                                        ORDER BY
-                                            SUM(total_hours) DESC
-                                        LIMIT 4`,
+    const allEvents = await pool.query(`
+      SELECT log_hours.userid,
+        firstname,
+        lastname,
+        users.profile_picture,
+        SUM (total_hours)
+      FROM   log_hours
+          INNER JOIN users
+                  ON log_hours.userid = users.userid
+      WHERE  log_hours.event_id = $1
+      GROUP  BY log_hours.userid,
+                firstname,
+                lastname,
+                users.profile_picture
+      ORDER  BY Sum(total_hours) DESC
+      LIMIT  4 
+    `,
     [event]);
     res.status(200).send(allEvents.rows);
   } catch (err) {
@@ -32,6 +37,7 @@ volunteerDataRouter.get('/top/', async (req, res) => {
 
 // Get all volunteers of a specific tier for a specific event
 volunteerDataRouter.get('/all/', async (req, res) => {
+  console.log('GET /volunteerData/all', req.query);
   const { event, sortingMethod } = req.query;
   const sortingDict = {
     0: '',
@@ -40,19 +46,24 @@ volunteerDataRouter.get('/all/', async (req, res) => {
     3: 'ORDER BY USERS.tier',
   };
   try {
-    const allEvents = await pool.query(`SELECT USERS.*,
-                                          PERMISSIONS.PERMISSIONS,
-                                          date_part('year', AGE(USERS.birthdate))::int,
-                                          SUM(TOTAL_HOURS)::int
-                                        FROM USERS
-                                        INNER JOIN PERMISSIONS ON PERMISSIONS.USERID = USERS.USERID
-                                        INNER JOIN LOG_HOURS ON LOG_HOURS.USERID = USERS.USERID
-                                        INNER JOIN USER_EVENT ON USER_EVENT.EVENT_ID = LOG_HOURS.EVENT_ID AND USER_EVENT.USERID = LOG_HOURS.USERID
-                                        WHERE USER_EVENT.EVENT_ID = $1
-                                        GROUP BY 
-                                          USERS.USERID,
-                                          PERMISSIONS.PERMISSIONS,
-                                        $2`,
+    const allEvents = await pool.query(`
+      SELECT users.*,
+          permissions.permissions,
+          Date_part('year', Age(users.birthdate)) :: INT,
+          SUM(total_hours) :: INT
+      FROM   users
+          INNER JOIN permissions
+                  ON permissions.userid = users.userid
+          INNER JOIN log_hours
+                  ON log_hours.userid = users.userid
+          INNER JOIN user_event
+                  ON user_event.event_id = log_hours.event_id
+                    AND user_event.userid = log_hours.userid
+      WHERE  user_event.event_id = $1
+      GROUP  BY users.userid,
+            permissions.permissions,
+      $2
+    `,
     [event, sortingDict[sortingMethod]]);
     res.status(200).send(allEvents.rows);
   } catch (err) {

@@ -9,8 +9,7 @@ const registerRouter = express();
 registerRouter.use(express.json());
 
 registerRouter.post('/create', async (req, res) => {
-  console.log('POST /register/create in');
-  console.log(req.body);
+  console.log('POST /register/create in', req.body);
 
   try {
     const {
@@ -216,6 +215,24 @@ registerRouter.get('/isVerified', async (req, res) => {
   } catch (e) {
     console.log(e);
     return res.status(500).send(e.message);
+  }
+});
+
+registerRouter.get('/:id', async (req, res) => {
+  console.log('GET /register/:id in', req.params);
+  const { params: { id } } = req;
+
+  try {
+    const result = await pool.query(`
+      SELECT EXISTS(SELECT 1
+        FROM   users
+        WHERE  userid = $1) 
+    `, [id]);
+
+    res.status(200).send(result.rows[0].exists);
+  } catch (err) {
+    console.error(err);
+    res.status(400).send(err.message);
   }
 });
 

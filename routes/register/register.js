@@ -48,8 +48,8 @@ registerRouter.post('/sendVerification', async (req, res) => {
   const { body: { userID, firstName, email } } = req;
 
   const emailLink = process.env.NODE_ENV === 'production'
-    ? `${process.env.WMK_REACT_APP_HOST}`
-    : `${process.env.WMK_REACT_APP_HOST}:${process.env.SELF_PORT}`;
+    ? `${process.env.SELF_DOMAIN}`
+    : `${process.env.SELF_DOMAIN}:${process.env.SELF_PORT}`;
 
   try {
     const msg = {

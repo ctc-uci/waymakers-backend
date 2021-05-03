@@ -22,7 +22,31 @@ const s3 = new aws.S3({
 // Get all accounts
 accountRouter.get('/', async (req, res) => {
   try {
-    const allAccounts = await pool.query('SELECT * FROM users');
+    const allAccounts = await pool.query(`
+      SELECT users.userid,
+            users.firstname,
+            users.lastname,
+            users.birthdate,
+            users.locationstreet,
+            users.locationcity,
+            users.locationzip,
+            users.locationstate,
+            users.tier,
+            users.division,
+            users.phone,
+            users.email,
+            users.location_street_2,
+            users.gender,
+            users.profile_picture,
+            users.verified,
+            permissions.permissions,
+            division.div_name
+      FROM users
+          INNER JOIN permissions
+                  ON ( users.userid = permissions.userid )
+          LEFT OUTER JOIN division
+                      ON ( users.division = division.id ) 
+    `);
     res.send(allAccounts.rows);
   } catch (err) {
     res.status(400).send(err.message);
@@ -70,6 +94,7 @@ accountRouter.get('/:id', async (req, res) => {
 
 // Create an account in ../register/register;
 
+// TODO: SQL injection
 // Update an account
 accountRouter.put('/:id', async (req, res) => {
   try {
@@ -100,6 +125,48 @@ accountRouter.put('/:id', async (req, res) => {
     // SET permissions = '${permission}' WHERE userid = '${id}'`);
 
     res.send(`Account with id ${id} was updated!`);
+  } catch (err) {
+    res.status(400).send(err.message);
+  }
+});
+
+// Update an account
+accountRouter.put('/adminUpdate/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const {
+      division, position,
+    } = req.body;
+
+    if (!division || !position) {
+      res.status(400).send('Missing body');
+      return;
+    }
+
+    const isValidUser = await pool.query(`
+    SELECT 1
+      from users
+      WHERE userid = $1`,
+    [id]);
+
+    if (isValidUser.rowCount === 0) {
+      res.status(400).send('Invalid user');
+      return;
+    }
+
+    await pool.query(`
+      UPDATE users
+      SET division = $1
+      WHERE userid = $2`,
+    [division, id]);
+
+    await pool.query(`
+      UPDATE permissions
+      SET permissions = $1
+      WHERE userid = $2`,
+    [position, id]);
+
+    res.send('Account was updated!');
   } catch (err) {
     res.status(400).send(err.message);
   }

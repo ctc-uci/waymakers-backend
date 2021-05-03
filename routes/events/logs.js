@@ -198,7 +198,7 @@ logRouter.get('/unsubmitted', async (req, res) => {
 });
 
 // Get approved hours of a specific users
-logRouter.get('/approved', async (req, res) => {
+logRouter.get('/submitted', async (req, res) => {
   // TODO: validate userId exists
   const {
     userId,

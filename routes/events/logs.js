@@ -42,6 +42,7 @@ logRouter.post('/add', async (req, res) => {
     const {
       userId, eventId, logStart, logEnd, totalHours, additionalNotes,
     } = req.body;
+    console.log(req.body);
     const response = await pool.query(`INSERT INTO log_hours
                         (userid, event_id, log_start, log_end, total_hours, additional_notes, log_status) 
                         VALUES ($1, $2, $3, $4, $5, $6, 'approved')
@@ -184,10 +185,13 @@ logRouter.get('/unsubmitted', async (req, res) => {
                                     on events.event_id = ue.event_id`, [userId]);
 
     const out = logs.rows.map((row) => ({
-      eventName: row.event_name,
+      id: row.event_id,
+      title: row.event_name,
       location: row.event_location,
       startTime: row.start_time,
       endTime: row.end_time,
+      eventType: row.event_type,
+      division: row.division,
     }));
 
     res.status(200).send(out);
@@ -213,6 +217,7 @@ logRouter.get('/submitted', async (req, res) => {
                                 AND log_hours.log_status = 'approved'`, [userId]);
 
     const out = logs.rows.map((row) => ({
+      eventId: row.event_id,
       eventName: row.event_name,
       location: row.event_location,
       startTime: row.log_start,

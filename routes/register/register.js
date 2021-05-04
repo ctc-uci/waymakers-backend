@@ -1,6 +1,6 @@
 // Routes relating to registering accounts here
 const express = require('express');
-const axios = require('axios');
+// const axios = require('axios');
 
 const pool = require('../../postgres/config');
 const { sgMail } = require('../../sendgrid/sendgrid');
@@ -164,22 +164,23 @@ registerRouter.get('/verify/:id', async (req, res) => {
     const userEmail = pgRes.rows[0].email;
 
     if (!userEmail) {
-      return res.status(500).send('User not found');
+      return res.status(200).send('User not found');
     }
     console.log(userEmail);
 
-    const { data } = await axios.get('https://apilayer.net/api/check', {
-      params: {
-        access_key: process.env.MAILBOXLAYER_API_KEY,
-        email: userEmail,
-        smtp: '1',
-      },
-    });
-    console.log(data);
+    // DEPRECATED
+    // const { data } = await axios.get('https://apilayer.net/api/check', {
+    //   params: {
+    //     access_key: process.env.MAILBOXLAYER_API_KEY,
+    //     email: userEmail,
+    //     smtp: '1',
+    //   },
+    // });
+    // console.log(data);
 
-    if (!data.mx_found) {
-      return res.status(400).send('Email is not a valid email');
-    }
+    // if (!data.mx_found) {
+    //   return res.status(400).send('Email is not a valid email');
+    // }
 
     // If it didn't exit at this point it means the user is good to be verified
     await pool.query(`
@@ -208,13 +209,22 @@ registerRouter.get('/isVerified', async (req, res) => {
       WHERE email = $1
     `, [email]);
     if (pgRes.rows.length < 1) {
-      return res.status(400).send('Email not found');
+      return res.status(200).send('Email not found');
     }
 
     return res.status(200).send(pgRes.rows[0].verified);
   } catch (e) {
     console.log(e);
     return res.status(500).send(e.message);
+  }
+});
+
+registerRouter.get('/divisions', async (req, res) => {
+  try {
+    const allDivisions = await pool.query('SELECT * FROM division');
+    res.send(allDivisions.rows);
+  } catch (err) {
+    res.status(400).send(err.message);
   }
 });
 

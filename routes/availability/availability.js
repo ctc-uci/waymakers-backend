@@ -31,7 +31,11 @@ availabilityRouter.get('/counts', async (req, res) => {
 
 availabilityRouter.get('/names', async (req, res) => {
   try {
-    const query = 'SELECT dayofweek, starttime, firstname, lastname, locationcity, phone, email FROM availability a1, users u WHERE a1.userid=u.userid ORDER BY (dayofweek, starttime);';
+    const query = `SELECT dayofweek, starttime, firstname, lastname,
+                          locationcity, phone, email, u.userid, permissions
+                  FROM availability a1, users u, permissions p
+                  WHERE a1.userid=u.userid AND a1.userid=p.userid
+                  ORDER BY (dayofweek, starttime);`;
     const allAvailability = await pool.query(query);
     // console.log('aggregate availability:', allAvailability.rows);
     res.status(200).send({

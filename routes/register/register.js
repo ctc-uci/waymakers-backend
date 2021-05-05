@@ -220,9 +220,11 @@ registerRouter.get('/isVerified', async (req, res) => {
 });
 
 registerRouter.get('/divisions', async (req, res) => {
+  console.log('GET /register/divisions in');
+
   try {
-    const allDivisions = await pool.query('SELECT * FROM division');
-    res.send(allDivisions.rows);
+    const allDivisions = await pool.query('SELECT * FROM division ORDER BY div_name ASC');
+    res.status(200).send(allDivisions.rows);
   } catch (err) {
     res.status(400).send(err.message);
   }

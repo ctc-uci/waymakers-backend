@@ -8,8 +8,8 @@ divisionRouter.use(express.json());
 // Get all divisions
 divisionRouter.get('/', async (req, res) => {
   try {
-    const allDivisions = await pool.query('SELECT * FROM division');
-    res.send(allDivisions.rows);
+    const allDivisions = await pool.query('SELECT * FROM division ORDER BY div_name ASC');
+    res.status(200).send(allDivisions.rows);
   } catch (err) {
     res.status(400).send(err.message);
   }

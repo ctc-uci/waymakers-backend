@@ -36,6 +36,7 @@ eventRouter.get('/', async (req, res) => {
 
 // Get an event
 eventRouter.get('/:id', async (req, res) => {
+  console.log('GET /events/:id in', req.params);
   const { id } = req.params;
   try {
     let event = await pool.query(`SELECT *

@@ -58,6 +58,35 @@ logRouter.post('/add', async (req, res) => {
   }
 });
 
+// Update log for user's event hours
+logRouter.put('/update', async (req, res) => {
+  console.log(req.body);
+  try {
+    const {
+      userId, eventId, logStart, logEnd, totalHours, additionalNotes,
+    } = req.body;
+    console.log(req.body);
+    const response = await pool.query(`UPDATE log_hours 
+                      SET userid = $1, 
+                      event_id = $2, 
+                      log_start = $3,
+                      log_end = $4, 
+                      total_hours = $5, 
+                      additional_notes = $6,
+                      log_status = 'approved'
+                      WHERE userid = $1 AND event_id = $2
+                      RETURNING *`, [userId, eventId, logStart, logEnd, totalHours, additionalNotes]);
+    if (response.rowCount === 0) {
+      res.status(400).send(response);
+    } else {
+      res.status(200).send(response);
+    }
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send(err.message);
+  }
+});
+
 // DEPRECATED
 // Resubmit a rejected hour
 // logRouter.post('/resubmitRejected', async (req, res) => {

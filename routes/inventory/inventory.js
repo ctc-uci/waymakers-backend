@@ -19,20 +19,31 @@ inventoryRouter.get('/', async (req, res) => {
   const warehouse = req.query.warehouse == null ? -1 : req.query.warehouse;
   const search = req.query.search == null ? '' : req.query.search;
   try {
-    const items = await pool.query(`SELECT item.id, name, quantity, needed, category_id FROM item
-                                    INNER JOIN warehouse
-                                      ON item.warehouse_num = warehouse.id 
-                                    INNER JOIN division
-                                      ON warehouse.div_num = division.id
-                                    WHERE
-                                      ($1 = -1 OR division.id = $1)
-                                    AND
-                                      ($2 = -1 OR item.category_id = $2)
-                                    AND
-                                      ($3 = -1 OR item.warehouse_num = $3)
-                                    AND 
-                                      ($4 = '' OR (LOWER(item.name) LIKE LOWER('%' || $4 || '%')))`,
-    [division, category, warehouse, search]);
+    const items = await pool.query(`
+      SELECT  item.id,
+              name,
+              quantity,
+              needed,
+              category_id,
+              warehouse_name,
+              div_name,
+              label
+      FROM  item
+            INNER JOIN warehouse
+                ON item.warehouse_num = warehouse.id 
+            INNER JOIN division
+                ON warehouse.div_num = division.id
+            INNER JOIN item_category
+                ON item_category.id = item.category_id
+      WHERE
+          ($1 = -1 OR division.id = $1)
+        AND
+          ($2 = -1 OR item.category_id = $2)
+        AND
+          ($3 = -1 OR item.warehouse_num = $3)
+        AND 
+          ($4 = '' OR (LOWER(item.name) LIKE LOWER('%' || $4 || '%')))
+  `, [division, category, warehouse, search]);
     res.send(items.rows);
   } catch (err) {
     console.log(err.message);

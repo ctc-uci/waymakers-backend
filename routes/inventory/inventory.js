@@ -19,31 +19,31 @@ inventoryRouter.get('/', async (req, res) => {
   const warehouse = req.query.warehouse == null ? -1 : req.query.warehouse;
   const search = req.query.search == null ? '' : req.query.search;
   try {
-    const items = await pool.query(`
-      SELECT  item.id,
-              name,
-              quantity,
-              needed,
-              category_id,
-              warehouse_name,
-              div_name,
-              label
-      FROM  item
-            INNER JOIN warehouse
-                ON item.warehouse_num = warehouse.id 
-            INNER JOIN division
-                ON warehouse.div_num = division.id
-            INNER JOIN item_category
-                ON item_category.id = item.category_id
-      WHERE
-          ($1 = -1 OR division.id = $1)
-        AND
-          ($2 = -1 OR item.category_id = $2)
-        AND
-          ($3 = -1 OR item.warehouse_num = $3)
-        AND 
-          ($4 = '' OR (LOWER(item.name) LIKE LOWER('%' || $4 || '%')))
-  `, [division, category, warehouse, search]);
+  const items = await pool.query(`SELECT  
+                                    item.id,
+                                    name,
+                                    quantity,
+                                    needed,
+                                    category_id,
+                                    warehouse_name,
+                                    div_name,
+                                    label
+                                  FROM item
+                                    INNER JOIN warehouse
+                                      ON item.warehouse_num = warehouse.id 
+                                    INNER JOIN division
+                                      ON warehouse.div_num = division.id
+                                    LEFT JOIN item_category
+                                      ON item.category_id = item_category.id
+                                  WHERE
+                                    ($1 = -1 OR division.id = $1)
+                                  AND
+                                    ($2 = -1 OR item.category_id = $2)
+                                  AND
+                                    ($3 = -1 OR item.warehouse_num = $3)
+                                  AND 
+                                    ($4 = '' OR (LOWER(item.name) LIKE LOWER('%' || $4 || '%')))`,
+    [division, category, warehouse, search]);
     res.send(items.rows);
   } catch (err) {
     console.log(err.message);
@@ -77,23 +77,17 @@ inventoryRouter.post('/', async (req, res) => {
     const {
       name, quantity, needed, warehouse,
     } = req.body;
-    if (name === '') res.status(400).send("Can't add item with no name");
-    else if (quantity < 0) res.status(400).send("Can't add item with negative quantity");
-    else if (needed < 0) res.status(400).send("Can't add item with negative needed");
-    else if (warehouse === '') res.status(400).send("Can't add item with a warehouse of type null");
-    else {
-      // We need to set category to null if there's no input so Postgres doesn't cry about it
-      const category = req.body.category ? req.body.category : null; // Category ID
-      const newItem = await pool.query(`INSERT INTO item (name, quantity, needed, category_id, last_edited, warehouse_num) VALUES 
-                                      ($1,
-                                       $2, 
-                                       $3, 
-                                       $4, 
-                                       (SELECT NOW()::timestamp),
-                                       $5) RETURNING *`,
-      [name, quantity, needed, category, warehouse]);
-      res.send(newItem.rows);
-    }
+    // We need to set category to null if there's no input so Postgres doesn't cry about it
+    const category = req.body.category ? req.body.category : null; // Category ID
+    const newItem = await pool.query(`INSERT INTO item (name, quantity, needed, category_id, last_edited, warehouse_num) VALUES 
+                                    ($1,
+                                      $2, 
+                                      $3, 
+                                      $4, 
+                                      (SELECT NOW()::timestamp),
+                                      $5) RETURNING *`,
+    [name, quantity, needed, category, warehouse]);
+    res.send(newItem.rows);
   } catch (err) {
     res.status(400).send(err.message);
   }

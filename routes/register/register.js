@@ -13,25 +13,42 @@ registerRouter.post('/create', async (req, res) => {
 
   try {
     const {
-      userID, firstName, lastName, email, phoneNumber, address1,
-      address2, city, state, zipcode, birthDate, gender, division,
-      verified,
+      userID, firstName, lastName, email,
+      phoneNumber, address1, address2, city, state,
+      zipcode, birthDate, gender, division, verified,
     } = req.body;
 
     const newAccount = await pool.query(`
-    INSERT INTO users (userid, firstname, lastname, birthDate, email, phone, locationstreet, location_street_2,
-      locationcity, locationstate, locationzip, gender, division, verified)
-    VALUES ('${userID}', '${firstName}', '${lastName}', '${birthDate}', '${email}',
-    '${phoneNumber}', '${address1}', '${address2}', '${city}', '${state}',
-    '${zipcode}', '${gender}', '${division}', '${verified}')
-    RETURNING *
-  `);
+      INSERT INTO users
+      (
+        userid, firstname, lastname, birthdate,
+        email, phone, locationstreet, location_street_2,
+        locationcity, locationstate, locationzip, gender,
+        division, verified
+      )
+      VALUES
+      (
+        $1, $2, $3, $4,
+        $5, $6, $7, $8,
+        $9, $10, $11, $12,
+        $13, $14
+      )
+      returning *
+    `, [userID, firstName, lastName, birthDate, email,
+      phoneNumber, address1, address2, city, state,
+      zipcode, gender, division, verified]);
 
     const newPermission = await pool.query(`
-      INSERT INTO permissions (userid, permissions)
-      VALUES ('${userID}', 'Volunteer')
-      RETURNING *
-  `);
+      INSERT INTO permissions
+      (
+        userid, permissions
+      )
+      VALUES
+      (
+        $1, 'Volunteer'
+      )
+      returning *
+    `, [userID]);
 
     res.status(200).send({
       newAccount: newAccount.rows[0],
@@ -160,6 +177,10 @@ registerRouter.get('/verify/:id', async (req, res) => {
       SELECT email FROM users
       WHERE userid = $1
     `, [id]);
+
+    if (pgRes.rows.length === 0) {
+      return res.status(200).send('Email not found');
+    }
 
     const userEmail = pgRes.rows[0].email;
 

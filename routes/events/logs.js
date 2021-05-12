@@ -264,20 +264,24 @@ logRouter.get('/submitted', async (req, res) => {
 // Get summation of a user's submitted hours per event type
 logRouter.get('/approved/sum', async (req, res) => {
   console.log('GET /approved/sum in', req.query);
-  const { userId, type } = req.query;
+  const { userId } = req.query;
 
   try {
-    const sum = await pool.query(`
-      SELECT SUM (total_hours)
-      FROM   log_hours
-            INNER JOIN events
-                    ON ( log_hours.event_id = events.event_id )
-      WHERE  log_hours.userid = $1
-            AND log_hours.log_status = 'approved'
-            AND events.event_type = $2 
-    `, [userId, type]);
-
-    res.status(200).send(sum.rows[0].sum);
+    const rawData = await pool.query(`
+        SELECT events.event_type, SUM (total_hours)
+        FROM   log_hours
+          INNER JOIN events
+              ON ( log_hours.event_id = events.event_id )
+        WHERE  log_hours.userid = $1
+          AND log_hours.log_status = 'approved'
+        GROUP BY events.event_type
+    `, [userId]);
+    // parse data into a dictionary for easy access
+    const data = rawData.rows.reduce((result, row) => {
+      result[row.event_type] = parseInt(row.sum);
+      return result;
+    }, {})
+    res.status(200).send(data);
   } catch (err) {
     console.error(err.message);
     res.status(400).send(err.message);

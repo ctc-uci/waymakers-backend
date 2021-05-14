@@ -51,6 +51,34 @@ inventoryRouter.get('/', async (req, res) => {
   }
 });
 
+inventoryRouter.get('/download/', async (req, res) => {
+  const division = req.query.division == null ? -1 : req.query.division;
+  try {
+    const items = await pool.query(`SELECT  
+                                      item.id,
+                                      name,
+                                      quantity,
+                                      needed,
+                                      label AS category,
+                                      warehouse_name,
+                                      div_name
+                                    FROM item
+                                      INNER JOIN warehouse
+                                        ON item.warehouse_num = warehouse.id 
+                                      INNER JOIN division
+                                        ON warehouse.div_num = division.id
+                                      LEFT JOIN item_category
+                                        ON item.category_id = item_category.id
+                                    WHERE
+                                      ($1 = -1 OR division.id = $1)`,
+      [division]);
+      res.send(items.rows);
+    } catch (err) {
+      console.log(err.message);
+      res.status(400).send(err.message);
+    }
+});
+
 // Gets the X most recently edited items (3 by default)
 inventoryRouter.get('/top/', async (req, res) => {
   const { warehouse } = req.query;

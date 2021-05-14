@@ -46,6 +46,8 @@ accountRouter.get('/', async (req, res) => {
                   ON ( users.userid = permissions.userid )
           LEFT OUTER JOIN division
                       ON ( users.division = division.id ) 
+      WHERE
+        users.verified
     `);
     res.send(allAccounts.rows);
   } catch (err) {
@@ -80,7 +82,9 @@ accountRouter.get('/:id', async (req, res) => {
 
   const { id } = req.params;
   try {
-    const account = await pool.query(`SELECT * FROM users WHERE userid = '${id}'`);
+    const account = await pool.query(`SELECT * FROM users
+                                      WHERE userid = '${id}' AND
+                                      users.verified`);
     // console.log(account);
     const permission = await pool.query(`SELECT * FROM permissions WHERE userid = '${id}'`);
     res.send({

@@ -251,6 +251,7 @@ logRouter.get('/submitted', async (req, res) => {
       location: row.event_location,
       startTime: row.log_start,
       endTime: row.log_end,
+      additionalNotes: row.additional_notes,
       hours: row.total_hours,
     }));
 
@@ -278,9 +279,10 @@ logRouter.get('/approved/sum', async (req, res) => {
     `, [userId]);
     // parse data into a dictionary for easy access
     const data = rawData.rows.reduce((result, row) => {
-      result[row.event_type] = parseInt(row.sum);
-      return result;
-    }, {})
+      const newResult = result;
+      newResult[row.event_type] = parseInt(row.sum, 10);
+      return newResult;
+    }, {});
     res.status(200).send(data);
   } catch (err) {
     console.error(err.message);

@@ -48,6 +48,23 @@ warehouseRouter.get('/:id', async (req, res) => {
   }
 });
 
+// Edit a warehouse
+warehouseRouter.put('/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name } = req.body;
+    await pool.query(`UPDATE warehouse SET
+                        warehouse_name=$1
+                      WHERE
+                        id=$2`, 
+                      [name, id]);
+    res.status(200).send(`Warehouse with id ${id} was updated!`);
+  } catch(err) {
+    console.log(err.message);
+    res.status(400).send(err.message);
+  }
+})
+
 // Delete a warehouse by id
 warehouseRouter.delete('/:id', async (req, res) => {
   try {

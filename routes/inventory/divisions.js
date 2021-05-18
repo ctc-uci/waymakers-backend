@@ -40,6 +40,23 @@ divisionRouter.post('/', async (req, res) => {
   }
 });
 
+// Edit a division
+divisionRouter.put('/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name } = req.body;
+    await pool.query(`UPDATE division SET
+                        div_name=$1
+                      WHERE
+                        id=$2`, 
+                      [name, id]);
+    res.status(200).send(`Division with id ${id} was updated!`);
+  } catch(err) {
+    console.log(err.message);
+    res.status(400).send(err.message);
+  }
+})
+
 // Delete a division
 divisionRouter.delete('/:id', async (req, res) => {
   try {
